@@ -357,9 +357,9 @@
             Realizar Sorteo
           </h3>
           
-          <button class="sorteo-button" id="sorteo-btn">
-            <i class="fas fa-play"></i>
-            Iniciar Sorteo
+          <button class="sorteo-btn" id="raffle-btn">
+            <i class="fas fa-dice"></i>
+            Sortear 3 Ganadores
           </button>
           
           <div class="winner-display" id="winner-display">
@@ -579,6 +579,11 @@
             return;
         }
         
+        if (participants.length < 3) {
+            alert('⚠️ Se necesitan al menos 3 participantes para el sorteo');
+            return;
+        }
+        
         isRaffleRunning = true;
         const raffleBtn = document.getElementById('raffle-btn');
         const winnerContainer = document.getElementById('winner-container');
@@ -598,7 +603,7 @@
                 <div class="raffle-spinner">🎯</div>
             </div>
             <div class="raffle-text">
-                <h3>🎲 Seleccionando ganador...</h3>
+                <h3>🎲 Seleccionando 3 ganadores...</h3>
                 <p>Entre ${participants.length} participantes</p>
             </div>
         `;
@@ -608,47 +613,88 @@
         // Esperar 3 segundos para efecto dramático
         await new Promise(resolve => setTimeout(resolve, 3000));
         
-        // Seleccionar ganador
-        const winner = dataManager.drawWinner();
+        // Seleccionar 3 ganadores aleatorios sin repetir
+        const winners = [];
+        const availableParticipants = [...participants];
         
-        if (winner) {
-            // Mostrar ganador
-            animationContainer.innerHTML = `
-                <div class="winner-announcement">
-                    <div class="winner-trophy">🏆</div>
-                    <h2>¡GANADOR!</h2>
-                    <div class="winner-details">
-                        <h3>${winner.name}</h3>
-                        <p class="winner-email">${winner.email}</p>
-                        <div class="winner-wallet">
-                            <i class="fas fa-wallet"></i>
-                            ${winner.wallet.substring(0, 15)}...
-                        </div>
-                        <div class="winner-meta">
-                            <span><i class="fas fa-calendar"></i> ${winner.timestamp}</span>
-                            <span><i class="fas fa-hashtag"></i> ID: ${winner.id}</span>
-                        </div>
-                    </div>
-                    <div class="winner-actions">
-                        <button onclick="copyWinnerInfo('${winner.id}')" class="action-btn">
-                            <i class="fas fa-copy"></i> Copiar Info
-                        </button>
-                        <button onclick="takeScreenshot()" class="action-btn">
-                            <i class="fas fa-camera"></i> Captura
-                        </button>
-                        <button onclick="clearWinner()" class="action-btn secondary">
-                            <i class="fas fa-refresh"></i> Nuevo Sorteo
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            // Confetti effect
-            createConfetti();
+        for (let i = 0; i < 3; i++) {
+            const randomIndex = Math.floor(Math.random() * availableParticipants.length);
+            winners.push(availableParticipants[randomIndex]);
+            availableParticipants.splice(randomIndex, 1);
         }
         
+        // Mostrar ganadores
+        animationContainer.innerHTML = `
+            <div class="winner-announcement">
+                <div class="winner-trophy">🏆</div>
+                <h2>¡GANADORES!</h2>
+                
+                <div style="display: grid; gap: 1.5rem; margin-top: 2rem;">
+                    ${winners.map((winner, index) => `
+                        <div style="
+                            background: rgba(255,255,255,0.2);
+                            padding: 1.5rem;
+                            border-radius: 12px;
+                            border: 2px solid rgba(255,255,255,0.3);
+                        ">
+                            <div style="
+                                display: flex;
+                                align-items: center;
+                                gap: 1rem;
+                                margin-bottom: 1rem;
+                            ">
+                                <span style="
+                                    background: ${index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : '#CD7F32'};
+                                    color: #000;
+                                    width: 40px;
+                                    height: 40px;
+                                    border-radius: 50%;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-weight: bold;
+                                    font-size: 1.2rem;
+                                ">${index + 1}°</span>
+                                <div style="text-align: left;">
+                                    <h3 style="margin: 0; font-size: 1.2rem;">${winner.name}</h3>
+                                    <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">${winner.email}</p>
+                                </div>
+                            </div>
+                            <div style="
+                                display: flex;
+                                gap: 0.5rem;
+                                font-size: 0.85rem;
+                                opacity: 0.8;
+                            ">
+                                <span><i class="fas fa-wallet"></i> ${winner.wallet.substring(0, 10)}...</span>
+                                <span><i class="fas fa-fingerprint"></i> ${winner.id.substring(0, 8)}</span>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="winner-actions" style="margin-top: 2rem;">
+                    <button onclick="copyWinnersInfo()" class="action-btn">
+                        <i class="fas fa-copy"></i> Copiar Ganadores
+                    </button>
+                    <button onclick="takeScreenshot()" class="action-btn">
+                        <i class="fas fa-camera"></i> Captura
+                    </button>
+                    <button onclick="clearWinner()" class="action-btn secondary">
+                        <i class="fas fa-refresh"></i> Nuevo Sorteo
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Guardar ganadores en variable global para copiar
+        window.lastWinners = winners;
+        
+        // Confetti effect
+        createConfetti();
+        
         // Restaurar botón
-        raffleBtn.innerHTML = '<i class="fas fa-dice"></i> Realizar Sorteo';
+        raffleBtn.innerHTML = '<i class="fas fa-dice"></i> Sortear 3 Ganadores';
         raffleBtn.disabled = false;
         isRaffleRunning = false;
     }
@@ -666,6 +712,18 @@
         const winner = participants.find(p => p.id === winnerId);
         if (winner) {
             const info = `🏆 GANADOR SORTEO SUILATAM\n\nNombre: ${winner.name}\nEmail: ${winner.email}\nWallet: ${winner.wallet}\nFecha: ${winner.timestamp}\nID: ${winner.id}`;
+            copyToClipboard(info);
+        }
+    }
+
+    // Nueva función para copiar info de los 3 ganadores
+    function copyWinnersInfo() {
+        if (window.lastWinners && window.lastWinners.length === 3) {
+            const info = `🏆 GANADORES SORTEO SUILATAM 🏆\n\n` +
+                window.lastWinners.map((winner, index) => 
+                    `${index + 1}° LUGAR:\nNombre: ${winner.name}\nEmail: ${winner.email}\nWallet: ${winner.wallet}\nID: ${winner.id}`
+                ).join('\n\n') +
+                `\n\nFecha del sorteo: ${new Date().toLocaleString()}`;
             copyToClipboard(info);
         }
     }

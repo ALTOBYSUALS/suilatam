@@ -56,8 +56,8 @@ class ContestDataManager {
       localStorage.setItem(this.storageKey, JSON.stringify(stored));
       
       console.log('✅ Participante guardado localmente:', participantData);
-      this.showSuccessMessage();
-      
+        this.showSuccessMessage();
+
       return participantData;
     } catch (error) {
       console.error('❌ Error guardando participante:', error);
