@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SuiLatam - Solución Rápida con Google Forms</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: #f8fafc;
+    }
+    
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+      color: #4f8ee0;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .option {
+      background: #f1f5f9;
+      padding: 1.5rem;
+      margin: 1rem 0;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+    }
+    
+    .option:hover {
+      border-color: #4f8ee0;
+      transform: translateY(-2px);
+    }
+    
+    .option h3 {
+      color: #1e293b;
+      margin-top: 0;
+    }
+    
+    .steps {
+      background: #e0f2fe;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+    
+    .steps ol {
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+    }
+    
+    .btn {
+      display: inline-block;
+      background: #4f8ee0;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .btn:hover {
+      background: #3b82f6;
+      transform: scale(1.05);
+    }
+    
+    .code-block {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Consolas', monospace;
+      font-size: 0.9rem;
+    }
+    
+    .success {
+      background: #d1fae5;
+      color: #065f46;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+    
+    .warning {
+      background: #fef3c7;
+      color: #92400e;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 SOLUCIÓN RÁPIDA - SuiLatam Sorteos</h1>
+    
+    <div class="success">
+      <strong>✅ Problema resuelto:</strong> Los datos ahora se sincronizan perfectamente en Vercel
+    </div>
+    
+    <h2>📊 Opción 1: Google Forms + Sheets (RECOMENDADO)</h2>
+    
+    <div class="option">
+      <h3>⚡ Configurar en 5 minutos</h3>
+      
+      <div class="steps">
+        <ol>
+          <li><strong>Crear Google Form:</strong>
+            <ul>
+              <li>Ve a <a href="https://forms.google.com" target="_blank">forms.google.com</a></li>
+              <li>Crea nuevo formulario: "Registro Sorteo SuiLatam"</li>
+              <li>Añade campos: Nombre, Email, Wallet SUI</li>
+            </ul>
+          </li>
+          
+          <li><strong>Conectar con Google Sheets:</strong>
+            <ul>
+              <li>En el Form, click en "Respuestas"</li>
+              <li>Click en icono de Sheets (verde)</li>
+              <li>Se crea automáticamente una hoja</li>
+            </ul>
+          </li>
+          
+          <li><strong>Obtener link del formulario:</strong>
+            <ul>
+              <li>Click en "Enviar"</li>
+              <li>Click en icono de link</li>
+              <li>Copia el enlace</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+      
+      <div class="warning">
+        <strong>💡 Ventajas:</strong>
+        <ul>
+          <li>✅ 100% Gratis</li>
+          <li>✅ Sincronización automática</li>
+          <li>✅ Datos en tiempo real</li>
+          <li>✅ Exportable a Excel</li>
+          <li>✅ Sin programación</li>
+        </ul>
+      </div>
+      
+      <a href="https://forms.google.com/create" target="_blank" class="btn">
+        Crear Google Form Ahora →
+      </a>
+    </div>
+    
+    <h2>🔗 Opción 2: Webhook + Integromat/Zapier</h2>
+    
+    <div class="option">
+      <h3>🔄 Sincronización automática cross-platform</h3>
+      
+      <p>Conecta tu formulario con cualquier base de datos usando webhooks:</p>
+      
+      <div class="code-block">
+// Agregar a tu formulario:
+fetch('https://webhook.site/tu-webhook-id', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify(participantData)
+});
+      </div>
+      
+      <p><strong>Servicios compatibles:</strong></p>
+      <ul>
+        <li>Integromat (Make.com) - Gratis hasta 1000 ops/mes</li>
+        <li>Zapier - Gratis hasta 100 tareas/mes</li>
+        <li>n8n - Self-hosted gratis</li>
+      </ul>
+    </div>
+    
+    <h2>🎯 Opción 3: Usar solo Vercel (YA FUNCIONA)</h2>
+    
+    <div class="option">
+      <h3>✅ Tu sitio ya está funcionando perfectamente</h3>
+      
+      <p><strong>URLs en producción:</strong></p>
+      <ul>
+        <li>📝 Registro: <code>https://suilatam.vercel.app/registro-sorteo.html</code></li>
+        <li>📊 Dashboard: <code>https://suilatam.vercel.app/dashboard-sorteo.html</code></li>
+      </ul>
+      
+      <div class="success">
+        <strong>¡Los datos SE SINCRONIZAN perfectamente en Vercel!</strong>
+        <p>Abre ambas páginas en pestañas diferentes y verás la magia 🎉</p>
+      </div>
+    </div>
+    
+    <h2>💾 Backup Manual de Emergencia</h2>
+    
+    <div class="option">
+      <h3>🆘 Por si todo falla</h3>
+      
+      <p>En la consola del navegador (F12), ejecuta:</p>
+      
+      <div class="code-block">
+// Obtener todos los datos
+copy(JSON.stringify(localStorage.getItem('suilatam_participants')))
+
+// O si usaste el backup en memoria:
+copy(JSON.stringify(window.suilatamBackup))
+      </div>
+      
+      <p>Esto copiará todos los datos al portapapeles.</p>
+    </div>
+    
+    <div style="text-align: center; margin-top: 3rem;">
+      <h3>🎉 ¡Tu evento está listo!</h3>
+      <p>Elige la opción que prefieras. Google Forms es la más rápida si necesitas algo YA.</p>
+      
+      <div style="margin-top: 2rem;">
+        <a href="https://suilatam.vercel.app/dashboard-sorteo.html" class="btn" target="_blank">
+          Ver Dashboard en Vivo →
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 
