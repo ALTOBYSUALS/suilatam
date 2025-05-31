@@ -200,137 +200,83 @@ p {
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(10, 10, 10, 0.8);
+  background: rgba(10, 10, 10, 0.95);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border-primary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 1000;
-  transition: var(--transition);
+  padding: 0.5rem 0;
+  transition: all var(--duration-normal);
 }
 
 .nav-container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 var(--space-md);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
-  max-width: var(--container-width);
-  margin: 0 auto;
 }
 
 .nav-logo {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  text-decoration: none;
-  color: var(--text-primary);
-  position: relative;
 }
 
 .logo-img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 8px var(--accent-blue));
-  animation: pulse-glow 3s ease-in-out infinite alternate;
-}
-
-@keyframes pulse-glow {
-  0% {
-    filter: drop-shadow(0 0 5px var(--accent-blue));
-  }
-  50% {
-    filter: drop-shadow(0 0 15px var(--accent-cyan));
-  }
-  100% {
-    filter: drop-shadow(0 0 8px var(--accent-purple));
-  }
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
 }
 
 .logo-text {
-  font-family: var(--font-gaming);
   font-size: 1.5rem;
   font-weight: 700;
-  color: transparent;
-  background: linear-gradient(to right, var(--accent-blue), var(--accent-cyan), var(--accent-purple));
-  background-size: 200% auto;
-  background-clip: text;
-  -webkit-background-clip: text;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  position: relative;
-  animation: text-shine 3s ease-in-out infinite;
-  text-shadow: 
-    0 0 10px rgba(0, 212, 255, 0.5),
-    0 0 20px rgba(0, 212, 255, 0.3),
-    0 0 30px rgba(0, 212, 255, 0.1);
-}
-
-.logo-text::after {
-  content: attr(data-text);
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: -1;
-  color: transparent;
-  transform: scale(1.01, 1.05) translate(-2px, 0);
-  background: linear-gradient(to right, var(--accent-pink), var(--accent-purple));
-  background-clip: text;
-  -webkit-background-clip: text;
-  opacity: 0.3;
-  filter: blur(4px);
-}
-
-@keyframes text-shine {
-  0% {
-    background-position: 0% center;
-  }
-  50% {
-    background-position: 100% center;
-  }
-  100% {
-    background-position: 0% center;
-  }
+  color: var(--primary);
 }
 
 .nav-menu {
   display: flex;
-  gap: 2rem;
-  list-style: none;
+  align-items: center;
+  gap: var(--space-lg);
 }
 
 .nav-link {
-  font-weight: 500;
-  text-decoration: none;
   color: var(--text-secondary);
-  transition: var(--transition);
-  position: relative;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 0;
+  transition: color var(--duration-normal);
 }
 
 .nav-link:hover {
-  color: var(--accent-blue);
+  color: var(--primary);
 }
 
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--accent-blue);
-  transition: var(--transition);
+/* QR Scanner Link */
+.nav-link.qr-link {
+  background: linear-gradient(135deg, #4F8EE0, #a855f7);
+  color: white !important;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 600;
 }
 
-.nav-link:hover::after {
-  width: 100%;
+.nav-link.qr-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(79, 142, 224, 0.4);
+  color: white !important;
+}
+
+.nav-link.qr-link i {
+  margin-right: 0.5rem;
 }
 
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-sm);
 }
 
 .hamburger {
@@ -984,4 +930,26 @@ html {
 ::-moz-selection {
   background: var(--accent-blue);
   color: var(--bg-primary);
-} 
+}
+
+/* === NAVIGATION SPECIAL LINK === */
+.nav-link.special-link {
+  background: linear-gradient(135deg, #4F8EE0, #a855f7);
+  color: white !important;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.nav-link.special-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(79, 142, 224, 0.4);
+  color: white !important;
+}
+
+.nav-link.special-link i {
+  margin-right: 0.5rem;
+}
+
+/* === EXISTING NAV STYLES === */ 

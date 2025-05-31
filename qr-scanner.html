@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>QR Scanner - SuiLatam</title>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <meta name="description" content="Escanea códigos QR para descubrir sorpresas especiales de SuiLatam">
+  
+  <!-- Favicon -->
+  <link href="images/logo.png" rel="shortcut icon" type="image/png" sizes="32x32">
+  
+  <!-- CSS -->
+  <link href="css/suilatam.css" rel="stylesheet" type="text/css">
+  <link href="css/qr-scanner.css" rel="stylesheet" type="text/css">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- QR Code Library -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <img src="images/logo.png" alt="SuiLatam Logo" class="logo-img">
+        <span class="logo-text">SuiLatam</span>
+      </div>
+      
+      <div class="nav-menu">
+        <a href="index.html" class="nav-link">
+          <i class="fas fa-arrow-left"></i>
+          Volver al Inicio
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- QR Scanner Section -->
+  <section class="qr-section">
+    <div class="container">
+      <div class="qr-container">
+        <div class="qr-header">
+          <h1 class="qr-title">
+            <i class="fas fa-qrcode"></i>
+            Escáner QR Especial
+          </h1>
+          <p class="qr-subtitle">
+            Apunta tu cámara al código QR para descubrir una sorpresa especial
+          </p>
+        </div>
+
+        <div class="qr-scanner-wrapper">
+          <div id="qr-reader" class="qr-reader"></div>
+          
+          <div class="qr-controls">
+            <button id="start-scanner" class="btn btn-primary btn-lg">
+              <i class="fas fa-camera"></i>
+              Activar Cámara
+            </button>
+            <button id="stop-scanner" class="btn btn-outline btn-lg" style="display: none;">
+              <i class="fas fa-stop"></i>
+              Detener Escáner
+            </button>
+          </div>
+
+          <div class="qr-status" id="qr-status">
+            <div class="status-message">
+              <i class="fas fa-info-circle"></i>
+              <span>Presiona "Activar Cámara" para comenzar</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="qr-instructions">
+          <h3>¿Cómo usar el escáner?</h3>
+          <div class="instructions-grid">
+            <div class="instruction-item">
+              <div class="instruction-icon">
+                <i class="fas fa-mobile-alt"></i>
+              </div>
+              <div class="instruction-text">
+                <strong>1. Activa la cámara</strong>
+                <p>Presiona el botón "Activar Cámara" y permite el acceso</p>
+              </div>
+            </div>
+            
+            <div class="instruction-item">
+              <div class="instruction-icon">
+                <i class="fas fa-crosshairs"></i>
+              </div>
+              <div class="instruction-text">
+                <strong>2. Apunta al código QR</strong>
+                <p>Centra el código QR dentro del marco de la cámara</p>
+              </div>
+            </div>
+            
+            <div class="instruction-item">
+              <div class="instruction-icon">
+                <i class="fas fa-gift"></i>
+              </div>
+              <div class="instruction-text">
+                <strong>3. ¡Descubre la sorpresa!</strong>
+                <p>Serás redirigido automáticamente al premio especial</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img src="images/logo.png" alt="SuiLatam Logo" class="footer-logo">
+          <span class="footer-brand-text">SuiLatam</span>
+        </div>
+        
+        <div class="footer-links">
+          <a href="index.html">Inicio</a>
+          <a href="index.html#aprende">Aprende</a>
+          <a href="index.html#comunidad">Comunidad</a>
+        </div>
+        
+        <div class="social-links">
+          <a href="#" aria-label="Discord">
+            <i class="fab fa-discord"></i>
+          </a>
+          <a href="#" aria-label="Twitter">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" aria-label="Telegram">
+            <i class="fab fa-telegram"></i>
+          </a>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 SuiLatam. Construyendo el futuro financiero juntos.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/qr-scanner.js"></script>
+</body>
+</html> 

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Código QR de Prueba - SuiLatam</title>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+      color: white;
+      margin: 0;
+      padding: 2rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    
+    .container {
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+    }
+    
+    h1 {
+      color: #4F8EE0;
+      margin-bottom: 1rem;
+    }
+    
+    .qr-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      margin: 2rem 0;
+      display: inline-block;
+    }
+    
+    .instructions {
+      background: rgba(79, 142, 224, 0.1);
+      border: 1px solid rgba(79, 142, 224, 0.3);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+    
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #4F8EE0, #a855f7);
+      color: white;
+      text-decoration: none;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      margin: 1rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+  </style>
+  <!-- QR Code Generator -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>🎯 Código QR de Prueba</h1>
+    <p>Escanea este código QR con el escáner de SuiLatam para acceder al premio secreto</p>
+    
+    <div class="qr-container">
+      <canvas id="qr-code"></canvas>
+    </div>
+    
+    <div class="instructions">
+      <h3>📱 Instrucciones:</h3>
+      <ol style="text-align: left; max-width: 400px; margin: 0 auto;">
+        <li>Ve al <strong>QR Scanner</strong> en la navegación</li>
+        <li>Presiona <strong>"Activar Cámara"</strong></li>
+        <li>Apunta tu cámara a este código QR</li>
+        <li>¡Serás redirigido al premio secreto!</li>
+      </ol>
+    </div>
+    
+    <div>
+      <a href="qr-scanner.html" class="btn">
+        📱 Ir al Escáner QR
+      </a>
+      <a href="index.html" class="btn">
+        🏠 Volver al Inicio
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Generate QR code with SuiLatam special code
+    const canvas = document.getElementById('qr-code');
+    const qrText = 'suilatam-premio-especial';
+    
+    QRCode.toCanvas(canvas, qrText, {
+      width: 200,
+      height: 200,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    }, function (error) {
+      if (error) console.error(error);
+      console.log('QR Code generated successfully!');
+    });
+  </script>
+</body>
+</html> 
