@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Registro Sorteo SuiLatam | Únete a la Comunidad</title>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <meta name="description" content="Registrate en el sorteo oficial de SuiLatam y únete a la comunidad latina de blockchain Sui">
+  
+  <!-- Favicon -->
+  <link href="https://res.cloudinary.com/das1ozwma/image/upload/v1748645630/WhatsApp_Image_2025-05-30_at_19.28.29-removebg-preview_w20ozk.png" rel="shortcut icon" type="image/png" sizes="32x32">
+  <link href="https://res.cloudinary.com/das1ozwma/image/upload/v1748645630/WhatsApp_Image_2025-05-30_at_19.28.29-removebg-preview_w20ozk.png" rel="apple-touch-icon">
+  
+  <!-- CSS -->
+  <link href="css/suilatam.css" rel="stylesheet" type="text/css">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* Estilos específicos para la página de registro */
+    .registro-section {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+    
+    .registro-container {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 20px;
+      padding: 3rem;
+      max-width: 600px;
+      width: 100%;
+      border: 1px solid rgba(79, 142, 224, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+    
+    .registro-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      border-bottom: 1px solid rgba(79, 142, 224, 0.2);
+      padding-bottom: 2rem;
+    }
+    
+    .registro-logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(79, 142, 224, 0.3);
+    }
+    
+    .registro-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .registro-title {
+      color: #4F8EE0;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    
+    .registro-subtitle {
+      color: #a0aec0;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    
+    .registro-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #4F8EE0, #3b82f6);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .form-group {
+      margin-bottom: 2rem;
+    }
+    
+    .form-group label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #e2e8f0;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+    
+    .form-group label i {
+      color: #4F8EE0;
+      width: 24px;
+      font-size: 1.2rem;
+    }
+    
+    .form-input {
+      width: 100%;
+      background: rgba(30, 41, 59, 0.8);
+      border: 2px solid rgba(79, 142, 224, 0.3);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      color: #f1f5f9;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      height: 60px;
+      box-sizing: border-box;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #4F8EE0;
+      box-shadow: 0 0 0 4px rgba(79, 142, 224, 0.2);
+      background: rgba(30, 41, 59, 0.95);
+    }
+    
+    .form-input::placeholder {
+      color: #64748b;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #4F8EE0, #3b82f6);
+      border: none;
+      border-radius: 12px;
+      padding: 1.25rem;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(59, 130, 246, 0.5);
+    }
+    
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .success-message {
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      color: white;
+      margin-top: 2rem;
+      display: none;
+    }
+    
+    .success-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      animation: bounce 1s ease-out;
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 60%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-20px); }
+      80% { transform: translateY(-10px); }
+    }
+    
+    .info-cards {
+      display: grid;
+      gap: 1rem;
+      margin-top: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+    
+    .info-card {
+      background: rgba(79, 142, 224, 0.1);
+      border: 1px solid rgba(79, 142, 224, 0.2);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+    }
+    
+    .info-card-number {
+      color: #4F8EE0;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .info-card-label {
+      color: #a0aec0;
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+    
+    @media (max-width: 768px) {
+      .registro-container {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+      }
+      
+      .registro-title {
+        font-size: 2rem;
+      }
+      
+      .form-input, .submit-btn {
+        height: 55px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <img src="https://res.cloudinary.com/das1ozwma/image/upload/v1748645630/WhatsApp_Image_2025-05-30_at_19.28.29-removebg-preview_w20ozk.png" alt="SuiLatam Logo" class="logo-img">
+        <span class="logo-text">SuiLatam</span>
+      </div>
+      
+      <div class="nav-menu">
+        <a href="index.html" class="nav-link">
+          <i class="fas fa-home"></i>
+          Inicio
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Registro Section -->
+  <section class="registro-section">
+    <div class="registro-container">
+      <div class="registro-header">
+        <div class="registro-logo">
+          <img src="https://res.cloudinary.com/das1ozwma/image/upload/v1748645630/WhatsApp_Image_2025-05-30_at_19.28.29-removebg-preview_w20ozk.png" alt="SuiLatam">
+        </div>
+        
+        <h1 class="registro-title">¡Únete al Sorteo!</h1>
+        <p class="registro-subtitle">Regístrate en la comunidad SuiLatam y participa</p>
+        
+        <div class="registro-badge">
+          <i class="fas fa-gift"></i>
+          Sorteo Oficial SuiLatam
+        </div>
+        
+        <div class="info-cards">
+          <div class="info-card">
+            <div class="info-card-number">2,500+</div>
+            <div class="info-card-label">Miembros</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-number">15+</div>
+            <div class="info-card-label">Países</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card-number">100%</div>
+            <div class="info-card-label">En Español</div>
+          </div>
+        </div>
+      </div>
+
+      <form id="registro-form">
+        <div class="form-group">
+          <label for="nombre">
+            <i class="fas fa-user"></i>
+            Nombre Completo
+          </label>
+          <input 
+            type="text" 
+            id="nombre" 
+            name="nombre" 
+            class="form-input" 
+            placeholder="Tu nombre completo"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="email">
+            <i class="fas fa-envelope"></i>
+            Correo Electrónico
+          </label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            class="form-input" 
+            placeholder="tucorreo@ejemplo.com"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="wallet">
+            <i class="fas fa-wallet"></i>
+            Dirección de Wallet SUI
+          </label>
+          <input 
+            type="text" 
+            id="wallet" 
+            name="wallet" 
+            class="form-input" 
+            placeholder="0x123abcd..."
+            required
+          >
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">
+          <i class="fas fa-rocket"></i>
+          Registrarme en el Sorteo
+        </button>
+      </form>
+
+      <div class="success-message" id="success-message">
+        <div class="success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>¡Registro Exitoso!</h2>
+        <p>Ya estás participando en el sorteo de SuiLatam</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scripts -->
+  <script src="js/contest-data.js"></script>
+  <script>
+    // Inicializar el sistema de datos
+    const contestData = new ContestDataManager();
+    
+    // Manejar el formulario
+    document.getElementById('registro-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submit-btn');
+      const form = e.target;
+      const successMessage = document.getElementById('success-message');
+      
+      // Obtener datos del formulario
+      const formData = new FormData(form);
+      const participantData = {
+        name: formData.get('nombre').trim(),
+        email: formData.get('email').trim(),
+        wallet: formData.get('wallet').trim(),
+        qrCode: 'registro-directo-sorteo-suilatam'
+      };
+      
+      // Validar datos
+      if (!participantData.name || participantData.name.length < 2) {
+        alert('Por favor ingresa un nombre válido');
+        return;
+      }
+      
+      if (!participantData.email || !/\S+@\S+\.\S+/.test(participantData.email)) {
+        alert('Por favor ingresa un correo electrónico válido');
+        return;
+      }
+      
+      if (!participantData.wallet || !participantData.wallet.startsWith('0x') || participantData.wallet.length < 10) {
+        alert('Por favor ingresa una dirección de wallet SUI válida (debe comenzar con 0x)');
+        return;
+      }
+      
+      try {
+        // Deshabilitar botón
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+        
+        // Guardar datos
+        await contestData.captureParticipant(participantData);
+        
+        // Mostrar éxito
+        form.style.display = 'none';
+        successMessage.style.display = 'block';
+        
+        // Resetear después de 5 segundos
+        setTimeout(() => {
+          form.style.display = 'block';
+          successMessage.style.display = 'none';
+          form.reset();
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Registrarme en el Sorteo';
+        }, 5000);
+        
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al registrar. Por favor intenta de nuevo.');
+        
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Registrarme en el Sorteo';
+      }
+    });
+  </script>
+</body>
+</html> 
