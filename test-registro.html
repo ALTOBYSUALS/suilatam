@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TEST - Registro SuiLatam</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #000;
+      color: white;
+    }
+    
+    h1 {
+      color: #4F8EE0;
+      text-align: center;
+    }
+    
+    .test-form {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      background: #333;
+      border: 1px solid #555;
+      color: white;
+      border-radius: 5px;
+    }
+    
+    button {
+      width: 100%;
+      padding: 15px;
+      background: #4F8EE0;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    
+    button:hover {
+      background: #3a7bc8;
+    }
+    
+    .results {
+      background: #333;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    
+    .participant {
+      background: #444;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+    
+    .success {
+      background: green;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 10px 0;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 TEST - Sistema de Registro</h1>
+  
+  <div class="test-form">
+    <h3>Registro de Prueba:</h3>
+    <input type="text" id="testName" placeholder="Nombre de prueba" value="Hugo Test">
+    <input type="email" id="testEmail" placeholder="Email de prueba" value="test@suilatam.com">
+    <input type="text" id="testWallet" placeholder="Wallet de prueba" value="0x123456789test">
+    <button onclick="testRegister()">🚀 REGISTRAR PRUEBA</button>
+    
+    <div id="successMessage" class="success">
+      ✅ ¡Registro exitoso!
+    </div>
+  </div>
+  
+  <div class="results">
+    <h3>Participantes en LocalStorage:</h3>
+    <div id="participantsList"></div>
+    <button onclick="clearData()" style="background: red; margin-top: 10px;">🗑️ Limpiar Datos</button>
+  </div>
+  
+  <div class="results">
+    <h3>Debug Info:</h3>
+    <div id="debugInfo"></div>
+  </div>
+
+  <script>
+    // Función de registro de prueba
+    function testRegister() {
+      const name = document.getElementById('testName').value;
+      const email = document.getElementById('testEmail').value;
+      const wallet = document.getElementById('testWallet').value;
+      
+      // Crear participante
+      const participant = {
+        id: Date.now() + Math.random(),
+        timestamp: new Date().toLocaleString(),
+        rawTimestamp: new Date().toISOString(),
+        name: name,
+        email: email,
+        wallet: wallet,
+        device: 'Test',
+        browser: 'Test',
+        source: 'test'
+      };
+      
+      try {
+        // Obtener datos existentes
+        const existing = localStorage.getItem('suilatam_participants');
+        const participants = existing ? JSON.parse(existing) : [];
+        
+        // Agregar nuevo
+        participants.push(participant);
+        
+        // Guardar
+        localStorage.setItem('suilatam_participants', JSON.stringify(participants));
+        localStorage.setItem('suilatam_last_update', Date.now().toString());
+        
+        // Mostrar éxito
+        document.getElementById('successMessage').style.display = 'block';
+        setTimeout(() => {
+          document.getElementById('successMessage').style.display = 'none';
+        }, 3000);
+        
+        // Actualizar lista
+        showParticipants();
+        
+        console.log('✅ Participante guardado:', participant);
+        
+      } catch (error) {
+        console.error('❌ Error:', error);
+        alert('Error: ' + error.message);
+      }
+    }
+    
+    // Mostrar participantes
+    function showParticipants() {
+      try {
+        const data = localStorage.getItem('suilatam_participants');
+        const participants = data ? JSON.parse(data) : [];
+        
+        const container = document.getElementById('participantsList');
+        
+        if (participants.length === 0) {
+          container.innerHTML = '<p style="color: #aaa;">No hay participantes</p>';
+        } else {
+          container.innerHTML = participants.map((p, i) => `
+            <div class="participant">
+              <strong>${i + 1}. ${p.name}</strong><br>
+              Email: ${p.email}<br>
+              Wallet: ${p.wallet}<br>
+              Fecha: ${p.timestamp}<br>
+              ID: ${p.id}
+            </div>
+          `).join('');
+        }
+        
+        // Debug info
+        document.getElementById('debugInfo').innerHTML = `
+          <p><strong>Total participantes:</strong> ${participants.length}</p>
+          <p><strong>LocalStorage key:</strong> suilatam_participants</p>
+          <p><strong>Última actualización:</strong> ${localStorage.getItem('suilatam_last_update')}</p>
+          <p><strong>Datos raw:</strong></p>
+          <pre style="background: #111; padding: 10px; overflow: auto; font-size: 12px;">${JSON.stringify(participants, null, 2)}</pre>
+        `;
+        
+      } catch (error) {
+        console.error('Error mostrando participantes:', error);
+        document.getElementById('participantsList').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+      }
+    }
+    
+    // Limpiar datos
+    function clearData() {
+      if (confirm('¿Limpiar todos los datos?')) {
+        localStorage.removeItem('suilatam_participants');
+        localStorage.removeItem('suilatam_last_update');
+        showParticipants();
+        alert('Datos limpiados');
+      }
+    }
+    
+    // Cargar al inicio
+    showParticipants();
+    
+    // Auto-actualizar cada 2 segundos
+    setInterval(showParticipants, 2000);
+    
+    console.log('🧪 Página de test cargada');
+  </script>
+</body>
+</html> 
