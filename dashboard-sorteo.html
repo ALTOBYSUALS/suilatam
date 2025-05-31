@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Dashboard Sorteo SuiLatam | Panel de Control</title>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <meta name="description" content="Dashboard para gestionar y realizar sorteos de SuiLatam en tiempo real">
+  
+  <!-- Favicon -->
+  <link href="https://res.cloudinary.com/das1ozwma/image/upload/v1748645630/WhatsApp_Image_2025-05-30_at_19.28.29-removebg-preview_w20ozk.png" rel="shortcut icon" type="image/png" sizes="32x32">
+  
+  <!-- CSS -->
+  <link href="css/suilatam.css" rel="stylesheet" type="text/css">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .dashboard-header {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(79, 142, 224, 0.3);
+      text-align: center;
+    }
+    
+    .dashboard-title {
+      color: #4F8EE0;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+    
+    .dashboard-subtitle {
+      color: #a0aec0;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid rgba(79, 142, 224, 0.3);
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #4F8EE0;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+      color: #a0aec0;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 2rem;
+    }
+    
+    .participants-section {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 16px;
+      border: 1px solid rgba(79, 142, 224, 0.3);
+      overflow: hidden;
+    }
+    
+    .section-header {
+      background: rgba(79, 142, 224, 0.1);
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid rgba(79, 142, 224, 0.2);
+    }
+    
+    .section-title {
+      color: #4F8EE0;
+      font-size: 1.3rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .participants-list {
+      padding: 1rem;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    
+    .participant-item {
+      background: rgba(30, 41, 59, 0.5);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border-left: 3px solid #4F8EE0;
+      transition: all 0.2s ease;
+    }
+    
+    .participant-item:hover {
+      background: rgba(30, 41, 59, 0.8);
+      transform: translateX(3px);
+    }
+    
+    .participant-name {
+      color: #e2e8f0;
+      font-weight: 600;
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+    
+    .participant-details {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    
+    .sorteo-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .sorteo-card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid rgba(79, 142, 224, 0.3);
+      text-align: center;
+    }
+    
+    .sorteo-button {
+      width: 100%;
+      background: linear-gradient(135deg, #4F8EE0, #3b82f6);
+      border: none;
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+    }
+    
+    .sorteo-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 35px rgba(59, 130, 246, 0.5);
+    }
+    
+    .sorteo-button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+    
+    .winner-display {
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-top: 1rem;
+      display: none;
+      animation: slideInUp 0.5s ease-out;
+    }
+    
+    .winner-crown {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      animation: bounce 1s infinite;
+    }
+    
+    .winner-name {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 0.5rem;
+    }
+    
+    .winner-details {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.9rem;
+    }
+    
+    .action-buttons {
+      display: grid;
+      gap: 1rem;
+    }
+    
+    .action-btn {
+      background: rgba(79, 142, 224, 0.1);
+      border: 1px solid rgba(79, 142, 224, 0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      color: #4F8EE0;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+    
+    .action-btn:hover {
+      background: rgba(79, 142, 224, 0.2);
+      transform: translateY(-1px);
+    }
+    
+    .link-section {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid rgba(79, 142, 224, 0.3);
+    }
+    
+    .link-input {
+      width: 100%;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(79, 142, 224, 0.3);
+      border-radius: 6px;
+      padding: 0.75rem;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      box-sizing: border-box;
+    }
+    
+    .copy-btn {
+      width: 100%;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 6px;
+      padding: 0.75rem;
+      color: #22c55e;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .copy-btn:hover {
+      background: rgba(34, 197, 94, 0.2);
+    }
+    
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 60%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-10px); }
+      80% { transform: translateY(-5px); }
+    }
+    
+    .spinning {
+      animation: spin 2s linear infinite;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    @media (max-width: 1024px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+      
+      .dashboard-container {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <h1 class="dashboard-title">
+        <i class="fas fa-trophy"></i>
+        Dashboard Sorteo SuiLatam
+      </h1>
+      <p class="dashboard-subtitle">Panel de control para gestionar sorteos en tiempo real</p>
+      
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="total-participants">0</div>
+          <div class="stat-label">Participantes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="total-today">0</div>
+          <div class="stat-label">Hoy</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="total-pending">0</div>
+          <div class="stat-label">Pendientes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="total-winners">0</div>
+          <div class="stat-label">Ganadores</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="participants-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <i class="fas fa-users"></i>
+            Participantes en Tiempo Real
+          </h2>
+        </div>
+        <div class="participants-list" id="participants-list">
+          <!-- Los participantes aparecerán aquí -->
+        </div>
+      </div>
+
+      <div class="sorteo-section">
+        <div class="sorteo-card">
+          <h3 style="color: #4F8EE0; margin-bottom: 1rem;">
+            <i class="fas fa-dice"></i>
+            Realizar Sorteo
+          </h3>
+          
+          <button class="sorteo-button" id="sorteo-btn">
+            <i class="fas fa-play"></i>
+            Iniciar Sorteo
+          </button>
+          
+          <div class="winner-display" id="winner-display">
+            <div class="winner-crown">👑</div>
+            <div class="winner-name" id="winner-name"></div>
+            <div class="winner-details" id="winner-details"></div>
+          </div>
+        </div>
+
+        <div class="sorteo-card">
+          <h3 style="color: #4F8EE0; margin-bottom: 1rem;">
+            <i class="fas fa-link"></i>
+            Link de Registro
+          </h3>
+          
+          <div class="link-section">
+            <input 
+              type="text" 
+              class="link-input" 
+              id="registro-link" 
+              value="https://altobysuals.github.io/suilatam/registro-sorteo.html"
+              readonly
+            >
+            <button class="copy-btn" id="copy-link-btn">
+              <i class="fas fa-copy"></i>
+              Copiar Link
+            </button>
+          </div>
+        </div>
+
+        <div class="sorteo-card">
+          <h3 style="color: #4F8EE0; margin-bottom: 1rem;">
+            <i class="fas fa-tools"></i>
+            Acciones
+          </h3>
+          
+          <div class="action-buttons">
+            <button class="action-btn" id="export-btn">
+              <i class="fas fa-download"></i>
+              Exportar Lista
+            </button>
+            <button class="action-btn" id="clear-btn">
+              <i class="fas fa-trash"></i>
+              Limpiar Datos
+            </button>
+            <button class="action-btn" id="screenshot-btn">
+              <i class="fas fa-camera"></i>
+              Tomar Captura
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/contest-data.js"></script>
+  <script>
+    // Inicializar el sistema
+    const contestData = new ContestDataManager();
+    let updateInterval;
+    
+    // Elementos del DOM
+    const elements = {
+      totalParticipants: document.getElementById('total-participants'),
+      totalToday: document.getElementById('total-today'),
+      totalPending: document.getElementById('total-pending'),
+      totalWinners: document.getElementById('total-winners'),
+      participantsList: document.getElementById('participants-list'),
+      sorteoBtn: document.getElementById('sorteo-btn'),
+      winnerDisplay: document.getElementById('winner-display'),
+      winnerName: document.getElementById('winner-name'),
+      winnerDetails: document.getElementById('winner-details'),
+      copyLinkBtn: document.getElementById('copy-link-btn'),
+      exportBtn: document.getElementById('export-btn'),
+      clearBtn: document.getElementById('clear-btn'),
+      screenshotBtn: document.getElementById('screenshot-btn'),
+      registroLink: document.getElementById('registro-link')
+    };
+    
+    // Actualizar dashboard
+    function updateDashboard() {
+      const participants = contestData.getParticipants();
+      const today = new Date().toDateString();
+      const todayParticipants = participants.filter(p => 
+        new Date(p.rawTimestamp).toDateString() === today
+      );
+      
+      // Actualizar estadísticas
+      elements.totalParticipants.textContent = participants.length;
+      elements.totalToday.textContent = todayParticipants.length;
+      elements.totalPending.textContent = participants.length;
+      elements.totalWinners.textContent = '0'; // Puedes implementar lógica de ganadores
+      
+      // Actualizar lista de participantes
+      updateParticipantsList(participants);
+    }
+    
+    function updateParticipantsList(participants) {
+      // Ordenar por más recientes primero
+      participants.sort((a, b) => new Date(b.rawTimestamp) - new Date(a.rawTimestamp));
+      
+      elements.participantsList.innerHTML = '';
+      
+      participants.forEach((participant, index) => {
+        const item = document.createElement('div');
+        item.className = 'participant-item';
+        item.style.animationDelay = `${index * 0.1}s`;
+        
+        const timeAgo = getTimeAgo(new Date(participant.rawTimestamp));
+        const shortWallet = participant.wallet ? 
+          `${participant.wallet.substring(0, 6)}...${participant.wallet.substring(participant.wallet.length - 4)}` : 
+          'No especificada';
+        
+        item.innerHTML = `
+          <div class="participant-name">${participant.name}</div>
+          <div class="participant-details">
+            <div><i class="fas fa-envelope"></i> ${participant.email}</div>
+            <div><i class="fas fa-wallet"></i> ${shortWallet}</div>
+            <div><i class="fas fa-clock"></i> ${timeAgo}</div>
+          </div>
+        `;
+        
+        elements.participantsList.appendChild(item);
+      });
+    }
+    
+    function getTimeAgo(date) {
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      
+      if (diffMins < 1) return 'Hace un momento';
+      if (diffMins < 60) return `Hace ${diffMins} min`;
+      if (diffHours < 24) return `Hace ${diffHours}h`;
+      return date.toLocaleDateString();
+    }
+    
+    // Realizar sorteo
+    elements.sorteoBtn.addEventListener('click', function() {
+      const participants = contestData.getParticipants();
+      
+      if (participants.length === 0) {
+        alert('No hay participantes para realizar el sorteo.');
+        return;
+      }
+      
+      // Animación de sorteo
+      this.disabled = true;
+      this.innerHTML = '<i class="fas fa-spinner spinning"></i> Sorteando...';
+      
+      setTimeout(() => {
+        const winner = participants[Math.floor(Math.random() * participants.length)];
+        
+        elements.winnerName.textContent = winner.name;
+        elements.winnerDetails.innerHTML = `
+          <div><i class="fas fa-envelope"></i> ${winner.email}</div>
+          <div><i class="fas fa-wallet"></i> ${winner.wallet.substring(0, 10)}...</div>
+        `;
+        
+        elements.winnerDisplay.style.display = 'block';
+        
+        this.disabled = false;
+        this.innerHTML = '<i class="fas fa-redo"></i> Sortear Nuevamente';
+      }, 3000);
+    });
+    
+    // Copiar link
+    elements.copyLinkBtn.addEventListener('click', function() {
+      elements.registroLink.select();
+      document.execCommand('copy');
+      
+      this.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
+      setTimeout(() => {
+        this.innerHTML = '<i class="fas fa-copy"></i> Copiar Link';
+      }, 2000);
+    });
+    
+    // Exportar datos
+    elements.exportBtn.addEventListener('click', function() {
+      contestData.exportData('copy');
+    });
+    
+    // Limpiar datos
+    elements.clearBtn.addEventListener('click', function() {
+      contestData.clearAllData();
+      updateDashboard();
+    });
+    
+    // Captura de pantalla
+    elements.screenshotBtn.addEventListener('click', function() {
+      if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+        alert('Usa Cmd+Shift+4 (Mac) o Win+Shift+S (Windows) para capturar la pantalla del sorteo.');
+      } else {
+        alert('Captura manual: Usa las teclas de captura de tu sistema operativo.');
+      }
+    });
+    
+    // Inicializar y actualizar cada 3 segundos
+    updateDashboard();
+    updateInterval = setInterval(updateDashboard, 3000);
+    
+    // Limpiar intervalo al cerrar la página
+    window.addEventListener('beforeunload', () => {
+      if (updateInterval) clearInterval(updateInterval);
+    });
+  </script>
+</body>
+</html> 
