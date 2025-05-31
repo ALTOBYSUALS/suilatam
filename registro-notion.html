@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎲 Registro Sorteo SuiLatam</title>
+    <link rel="stylesheet" href="css/suilatam.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .registro-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            color: white;
+        }
+
+        .registro-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .registro-header h1 {
+            font-size: 2.5rem;
+            margin: 10px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            background: white;
+            box-shadow: 0 0 15px rgba(255,255,255,0.5);
+        }
+
+        .btn-registrar {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn-registrar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-registrar:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .success-message, .error-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .success-message {
+            background: rgba(76, 175, 80, 0.9);
+            color: white;
+        }
+
+        .error-message {
+            background: rgba(244, 67, 54, 0.9);
+            color: white;
+        }
+
+        .dashboard-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .dashboard-link a {
+            color: white;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .notion-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .status-online { border-left: 4px solid #4CAF50; }
+        .status-offline { border-left: 4px solid #f44336; }
+    </style>
+</head>
+<body>
+    <div class="notion-status" id="notionStatus">
+        <i class="fas fa-circle"></i> Conectando...
+    </div>
+
+    <div class="registro-container">
+        <div class="registro-header">
+            <img src="https://res.cloudinary.com/drkaw6gkn/image/upload/c_scale,w_80/v1732832574/logo%20sui%20latam.png" 
+                 alt="SuiLatam Logo" 
+                 style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid white;">
+            <h1>🎲 Registro Sorteo</h1>
+            <p>¡Únete al sorteo de SuiLatam!</p>
+        </div>
+
+        <form id="registroForm">
+            <div class="form-group">
+                <label for="nombre">
+                    <i class="fas fa-user"></i> Nombre Completo *
+                </label>
+                <input type="text" id="nombre" name="nombre" required 
+                       placeholder="Ingresa tu nombre completo">
+            </div>
+
+            <div class="form-group">
+                <label for="email">
+                    <i class="fas fa-envelope"></i> Email *
+                </label>
+                <input type="email" id="email" name="email" required 
+                       placeholder="tu@email.com">
+            </div>
+
+            <div class="form-group">
+                <label for="wallet">
+                    <i class="fas fa-wallet"></i> Wallet SUI *
+                </label>
+                <input type="text" id="wallet" name="wallet" required 
+                       placeholder="0x..." pattern="^0x[a-fA-F0-9]{40}$">
+                <small style="opacity: 0.8; font-size: 0.9rem;">
+                    Debe comenzar con 0x y tener 42 caracteres
+                </small>
+            </div>
+
+            <button type="submit" class="btn-registrar" id="btnRegistrar">
+                <i class="fas fa-rocket"></i> ¡REGISTRARME!
+            </button>
+        </form>
+
+        <div class="loading-spinner" id="loadingSpinner">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p>Registrando en Notion...</p>
+        </div>
+
+        <div id="messageContainer"></div>
+
+        <div class="dashboard-link">
+            <a href="dashboard-notion.html" target="_blank">
+                <i class="fas fa-chart-bar"></i> Ver Dashboard de Participantes
+            </a>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="notion-config.js"></script>
+    <script>
+        let notionManager;
+        let isSubmitting = false;
+
+        // Inicializar cuando carga la página
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Iniciando sistema de registro con Notion...');
+            
+            // Inicializar NotionManager
+            notionManager = new NotionManager();
+            
+            // Verificar conexión
+            await verificarConexion();
+            
+            // Configurar formulario
+            setupForm();
+        });
+
+        async function verificarConexion() {
+            const statusElement = document.getElementById('notionStatus');
+            
+            try {
+                statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Conectando...';
+                statusElement.className = 'notion-status';
+                
+                // Intentar obtener participantes para verificar conexión
+                const resultado = await notionManager.obtenerParticipantes();
+                
+                if (resultado.success) {
+                    statusElement.innerHTML = '<i class="fas fa-check-circle"></i> Notion Online';
+                    statusElement.className = 'notion-status status-online';
+                    console.log('✅ Conexión con Notion establecida');
+                } else {
+                    throw new Error(resultado.error);
+                }
+            } catch (error) {
+                statusElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Sin conexión';
+                statusElement.className = 'notion-status status-offline';
+                console.error('❌ Error de conexión:', error);
+                mostrarMensaje('Error de conexión con Notion. Verifica tu configuración.', 'error');
+            }
+        }
+
+        function setupForm() {
+            const form = document.getElementById('registroForm');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                if (isSubmitting) return;
+                
+                await registrarParticipante();
+            });
+
+            // Validación en tiempo real del wallet
+            document.getElementById('wallet').addEventListener('input', function(e) {
+                const wallet = e.target.value;
+                const isValid = /^0x[a-fA-F0-9]{40}$/.test(wallet);
+                
+                if (wallet.length > 0 && !isValid) {
+                    e.target.style.borderColor = '#f44336';
+                } else {
+                    e.target.style.borderColor = '';
+                }
+            });
+        }
+
+        async function registrarParticipante() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const wallet = document.getElementById('wallet').value.trim();
+            
+            // Validaciones
+            if (!nombre || !email || !wallet) {
+                mostrarMensaje('Por favor completa todos los campos', 'error');
+                return;
+            }
+
+            if (!/^0x[a-fA-F0-9]{40}$/.test(wallet)) {
+                mostrarMensaje('El formato del wallet SUI no es válido', 'error');
+                return;
+            }
+
+            // Iniciar proceso de registro
+            isSubmitting = true;
+            mostrarLoading(true);
+            limpiarMensajes();
+
+            try {
+                console.log('📝 Registrando participante:', { nombre, email, wallet });
+                
+                const resultado = await notionManager.registrarParticipante(nombre, email, wallet);
+                
+                if (resultado.success) {
+                    console.log('✅ Registro exitoso');
+                    mostrarMensaje('¡Registro exitoso! Ya estás participando en el sorteo 🎉', 'success');
+                    
+                    // Limpiar formulario
+                    document.getElementById('registroForm').reset();
+                    
+                    // Opcional: redirigir al dashboard después de 3 segundos
+                    setTimeout(() => {
+                        if (confirm('¿Quieres ver el dashboard de participantes?')) {
+                            window.open('dashboard-notion.html', '_blank');
+                        }
+                    }, 2000);
+                    
+                } else {
+                    throw new Error(resultado.error);
+                }
+                
+            } catch (error) {
+                console.error('❌ Error en registro:', error);
+                mostrarMensaje(`Error al registrar: ${error.message}`, 'error');
+            } finally {
+                isSubmitting = false;
+                mostrarLoading(false);
+            }
+        }
+
+        function mostrarLoading(show) {
+            const spinner = document.getElementById('loadingSpinner');
+            const button = document.getElementById('btnRegistrar');
+            
+            if (show) {
+                spinner.style.display = 'block';
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+            } else {
+                spinner.style.display = 'none';
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-rocket"></i> ¡REGISTRARME!';
+            }
+        }
+
+        function mostrarMensaje(mensaje, tipo) {
+            const container = document.getElementById('messageContainer');
+            
+            const div = document.createElement('div');
+            div.className = tipo === 'success' ? 'success-message' : 'error-message';
+            div.innerHTML = `
+                <i class="fas fa-${tipo === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                ${mensaje}
+            `;
+            
+            container.innerHTML = '';
+            container.appendChild(div);
+            
+            // Auto-ocultar después de 5 segundos
+            setTimeout(() => {
+                div.style.opacity = '0';
+                setTimeout(() => container.removeChild(div), 300);
+            }, 5000);
+        }
+
+        function limpiarMensajes() {
+            document.getElementById('messageContainer').innerHTML = '';
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Dashboard Sorteo SuiLatam</title>
+    <link rel="stylesheet" href="css/suilatam.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(45deg, #4F8EE0, #6F4EE0);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .dashboard-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 5px solid #4F8EE0;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4F8EE0;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .controls-section {
+            padding: 30px;
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn-control {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary { background: #4F8EE0; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn-danger { background: #dc3545; color: white; }
+
+        .btn-control:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .participants-section {
+            padding: 30px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        .participants-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .participants-table th {
+            background: #4F8EE0;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .participants-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .participants-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .wallet-address {
+            font-family: monospace;
+            font-size: 0.9rem;
+            background: #f1f3f4;
+            padding: 5px 8px;
+            border-radius: 5px;
+            word-break: break-all;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .notion-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            z-index: 999;
+        }
+
+        .status-online { border-left: 4px solid #4CAF50; }
+        .status-offline { border-left: 4px solid #f44336; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .participants-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="notion-status" id="notionStatus">
+        <i class="fas fa-circle"></i> Conectando...
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <i class="fas fa-spinner fa-spin fa-3x" style="color: #4F8EE0; margin-bottom: 20px;"></i>
+            <h3>Cargando datos desde Notion...</h3>
+            <p>Por favor espera un momento</p>
+        </div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <img src="https://res.cloudinary.com/drkaw6gkn/image/upload/c_scale,w_80/v1732832574/logo%20sui%20latam.png" 
+                 alt="SuiLatam Logo" 
+                 style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid white; margin-bottom: 15px;">
+            <h1>📊 Dashboard Sorteo SuiLatam</h1>
+            <p>Panel de administración - Datos en tiempo real desde Notion</p>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalParticipantes">0</div>
+                <div class="stat-label">Total Participantes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="registrosHoy">0</div>
+                <div class="stat-label">Registros Hoy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="ultimaActualizacion">--:--</div>
+                <div class="stat-label">Última Actualización</div>
+            </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="controls-section">
+            <div class="controls-grid">
+                <button class="btn-control btn-primary" onclick="cargarParticipantes()">
+                    <i class="fas fa-sync-alt"></i> Actualizar Datos
+                </button>
+                <button class="btn-control btn-success" onclick="exportarDatos('csv')">
+                    <i class="fas fa-file-csv"></i> Exportar CSV
+                </button>
+                <button class="btn-control btn-warning" onclick="sortearGanador()">
+                    <i class="fas fa-trophy"></i> Sortear Ganador
+                </button>
+                <button class="btn-control btn-danger" onclick="window.open('registro-notion.html', '_blank')">
+                    <i class="fas fa-user-plus"></i> Nuevo Registro
+                </button>
+            </div>
+        </div>
+
+        <!-- Lista de Participantes -->
+        <div class="participants-section">
+            <input type="text" class="search-box" placeholder="🔍 Buscar participante..." id="searchBox" onkeyup="filtrarParticipantes()">
+            
+            <div id="participantesContainer">
+                <!-- Aquí se cargarán los participantes -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="notion-config.js"></script>
+    <script>
+        let notionManager;
+        let participantes = [];
+        let participantesFiltrados = [];
+
+        // Inicializar cuando carga la página
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Iniciando dashboard con Notion...');
+            
+            // Inicializar NotionManager
+            notionManager = new NotionManager();
+            
+            // Verificar conexión y cargar datos
+            await verificarConexion();
+            await cargarParticipantes();
+            
+            // Auto-actualizar cada 30 segundos
+            setInterval(cargarParticipantes, 30000);
+        });
+
+        async function verificarConexion() {
+            const statusElement = document.getElementById('notionStatus');
+            
+            try {
+                statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Conectando...';
+                statusElement.className = 'notion-status';
+                
+                const resultado = await notionManager.obtenerParticipantes();
+                
+                if (resultado.success) {
+                    statusElement.innerHTML = '<i class="fas fa-check-circle"></i> Notion Online';
+                    statusElement.className = 'notion-status status-online';
+                    console.log('✅ Conexión con Notion establecida');
+                } else {
+                    throw new Error(resultado.error);
+                }
+            } catch (error) {
+                statusElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Sin conexión';
+                statusElement.className = 'notion-status status-offline';
+                console.error('❌ Error de conexión:', error);
+            }
+        }
+
+        async function cargarParticipantes() {
+            mostrarLoading(true);
+            
+            try {
+                console.log('📊 Cargando participantes desde Notion...');
+                
+                const resultado = await notionManager.obtenerParticipantes();
+                
+                if (resultado.success) {
+                    participantes = resultado.participantes;
+                    participantesFiltrados = [...participantes];
+                    
+                    console.log(`✅ ${participantes.length} participantes cargados`);
+                    
+                    actualizarEstadisticas();
+                    mostrarParticipantes();
+                } else {
+                    throw new Error(resultado.error);
+                }
+                
+            } catch (error) {
+                console.error('❌ Error al cargar participantes:', error);
+                mostrarError('Error al cargar datos desde Notion');
+            } finally {
+                mostrarLoading(false);
+            }
+        }
+
+        function actualizarEstadisticas() {
+            // Total participantes
+            document.getElementById('totalParticipantes').textContent = participantes.length;
+            
+            // Registros de hoy
+            const hoy = new Date().toISOString().split('T')[0];
+            const registrosHoy = participantes.filter(p => 
+                p.fecha && p.fecha.startsWith(hoy)
+            ).length;
+            document.getElementById('registrosHoy').textContent = registrosHoy;
+            
+            // Última actualización
+            const ahora = new Date();
+            document.getElementById('ultimaActualizacion').textContent = 
+                ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function mostrarParticipantes() {
+            const container = document.getElementById('participantesContainer');
+            
+            if (participantesFiltrados.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h3>No hay participantes</h3>
+                        <p>Aún no se han registrado participantes en el sorteo</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const tabla = `
+                <table class="participants-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Wallet SUI</th>
+                            <th>Fecha Registro</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${participantesFiltrados.map((p, index) => `
+                            <tr>
+                                <td><strong>${index + 1}</strong></td>
+                                <td>
+                                    <i class="fas fa-user" style="color: #4F8EE0; margin-right: 5px;"></i>
+                                    ${p.nombre}
+                                </td>
+                                <td>
+                                    <i class="fas fa-envelope" style="color: #28a745; margin-right: 5px;"></i>
+                                    ${p.email}
+                                </td>
+                                <td>
+                                    <div class="wallet-address">${p.wallet}</div>
+                                </td>
+                                <td>
+                                    <i class="fas fa-calendar" style="color: #ffc107; margin-right: 5px;"></i>
+                                    ${formatearFecha(p.fecha)}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tabla;
+        }
+
+        function filtrarParticipantes() {
+            const busqueda = document.getElementById('searchBox').value.toLowerCase();
+            
+            if (!busqueda) {
+                participantesFiltrados = [...participantes];
+            } else {
+                participantesFiltrados = participantes.filter(p =>
+                    p.nombre.toLowerCase().includes(busqueda) ||
+                    p.email.toLowerCase().includes(busqueda) ||
+                    p.wallet.toLowerCase().includes(busqueda)
+                );
+            }
+            
+            mostrarParticipantes();
+        }
+
+        function exportarDatos(formato) {
+            if (participantes.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+
+            let contenido = '';
+            let filename = '';
+
+            if (formato === 'csv') {
+                contenido = 'Nombre,Email,Wallet,Fecha\n';
+                contenido += participantes.map(p => 
+                    `"${p.nombre}","${p.email}","${p.wallet}","${p.fecha}"`
+                ).join('\n');
+                filename = `participantes_suilatam_${new Date().toISOString().split('T')[0]}.csv`;
+            }
+
+            const blob = new Blob([contenido], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+
+            console.log(`✅ Datos exportados: ${filename}`);
+        }
+
+        function sortearGanador() {
+            if (participantes.length === 0) {
+                alert('No hay participantes para sortear');
+                return;
+            }
+
+            const ganadorIndex = Math.floor(Math.random() * participantes.length);
+            const ganador = participantes[ganadorIndex];
+
+            const mensaje = `
+                🎉 ¡GANADOR DEL SORTEO! 🎉
+                
+                Nombre: ${ganador.nombre}
+                Email: ${ganador.email}
+                Wallet: ${ganador.wallet}
+                
+                ¡Felicitaciones!
+            `;
+
+            alert(mensaje);
+            console.log('🏆 Ganador sorteado:', ganador);
+        }
+
+        function mostrarLoading(show) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = show ? 'flex' : 'none';
+        }
+
+        function mostrarError(mensaje) {
+            alert(`❌ ${mensaje}`);
+        }
+
+        function formatearFecha(fechaStr) {
+            if (!fechaStr) return 'No disponible';
+            
+            const fecha = new Date(fechaStr);
+            return fecha.toLocaleString('es-ES', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+    </script>
+</body>
+</html> 
