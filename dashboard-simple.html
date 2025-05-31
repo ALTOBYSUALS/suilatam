@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Simple - SuiLatam</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #4F8EE0;
+      text-align: center;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+    
+    .stat-card {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid #333;
+    }
+    
+    .stat-number {
+      font-size: 3rem;
+      color: #4F8EE0;
+      font-weight: bold;
+    }
+    
+    .stat-label {
+      color: #888;
+      margin-top: 10px;
+    }
+    
+    .participants-section {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+    }
+    
+    .participant {
+      background: #333;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border-left: 4px solid #4F8EE0;
+    }
+    
+    .participant strong {
+      color: #4F8EE0;
+    }
+    
+    .no-data {
+      text-align: center;
+      color: #666;
+      padding: 40px;
+    }
+    
+    .actions {
+      text-align: center;
+      margin: 30px 0;
+    }
+    
+    button {
+      background: #4F8EE0;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 0 10px;
+    }
+    
+    button:hover {
+      background: #3a7bc8;
+    }
+    
+    .winner-section {
+      background: #22c55e;
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      margin: 20px 0;
+      display: none;
+    }
+    
+    .winner-section h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    
+    .refresh-info {
+      text-align: center;
+      color: #666;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏆 Dashboard Simple - Sorteo SuiLatam</h1>
+    
+    <div class="refresh-info">
+      ⏱️ Auto-actualización cada 2 segundos
+    </div>
+    
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-number" id="totalCount">0</div>
+        <div class="stat-label">Total Participantes</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-number" id="todayCount">0</div>
+        <div class="stat-label">Hoy</div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-number" id="lastHour">0</div>
+        <div class="stat-label">Última Hora</div>
+      </div>
+    </div>
+    
+    <div class="actions">
+      <button onclick="doRaffle()">🎲 SORTEAR GANADOR</button>
+      <button onclick="exportData()">📥 EXPORTAR DATOS</button>
+      <button onclick="clearAllData()">🗑️ LIMPIAR TODO</button>
+    </div>
+    
+    <div id="winnerSection" class="winner-section">
+      <h2>🎉 ¡GANADOR!</h2>
+      <div id="winnerInfo"></div>
+    </div>
+    
+    <div class="participants-section">
+      <h2>👥 Participantes Registrados</h2>
+      <div id="participantsList"></div>
+    </div>
+  </div>
+
+  <script>
+    // Función principal para actualizar dashboard
+    function updateDashboard() {
+      try {
+        // Obtener datos del localStorage
+        const data = localStorage.getItem('suilatam_participants');
+        const participants = data ? JSON.parse(data) : [];
+        
+        console.log('📊 Actualizando dashboard:', participants.length, 'participantes');
+        
+        // Actualizar estadísticas
+        document.getElementById('totalCount').textContent = participants.length;
+        
+        // Contar participantes de hoy
+        const today = new Date().toDateString();
+        const todayParticipants = participants.filter(p => {
+          const pDate = new Date(p.rawTimestamp || p.timestamp || Date.now());
+          return pDate.toDateString() === today;
+        });
+        document.getElementById('todayCount').textContent = todayParticipants.length;
+        
+        // Contar última hora
+        const oneHourAgo = Date.now() - (60 * 60 * 1000);
+        const lastHourParticipants = participants.filter(p => {
+          const pTime = new Date(p.rawTimestamp || p.timestamp || Date.now()).getTime();
+          return pTime > oneHourAgo;
+        });
+        document.getElementById('lastHour').textContent = lastHourParticipants.length;
+        
+        // Mostrar lista de participantes
+        const listContainer = document.getElementById('participantsList');
+        
+        if (participants.length === 0) {
+          listContainer.innerHTML = `
+            <div class="no-data">
+              <p>No hay participantes registrados aún</p>
+              <p>Usa el formulario de registro para agregar participantes</p>
+            </div>
+          `;
+        } else {
+          // Ordenar por más recientes primero
+          const sorted = [...participants].reverse();
+          
+          listContainer.innerHTML = sorted.map((p, index) => `
+            <div class="participant">
+              <strong>#${participants.length - index} - ${p.name}</strong><br>
+              📧 Email: ${p.email}<br>
+              💰 Wallet: ${p.wallet}<br>
+              📅 Fecha: ${p.timestamp}<br>
+              🆔 ID: ${p.id}
+            </div>
+          `).join('');
+        }
+        
+      } catch (error) {
+        console.error('❌ Error actualizando dashboard:', error);
+        document.getElementById('participantsList').innerHTML = `
+          <div class="no-data">
+            <p style="color: red;">Error: ${error.message}</p>
+          </div>
+        `;
+      }
+    }
+    
+    // Función de sorteo
+    function doRaffle() {
+      const data = localStorage.getItem('suilatam_participants');
+      const participants = data ? JSON.parse(data) : [];
+      
+      if (participants.length === 0) {
+        alert('❌ No hay participantes para sortear');
+        return;
+      }
+      
+      // Seleccionar ganador aleatorio
+      const randomIndex = Math.floor(Math.random() * participants.length);
+      const winner = participants[randomIndex];
+      
+      // Mostrar ganador
+      const winnerSection = document.getElementById('winnerSection');
+      const winnerInfo = document.getElementById('winnerInfo');
+      
+      winnerInfo.innerHTML = `
+        <h3>${winner.name}</h3>
+        <p>Email: ${winner.email}</p>
+        <p>Wallet: ${winner.wallet}</p>
+        <p>ID: ${winner.id}</p>
+      `;
+      
+      winnerSection.style.display = 'block';
+      
+      // Scroll al ganador
+      winnerSection.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Exportar datos
+    function exportData() {
+      const data = localStorage.getItem('suilatam_participants');
+      const participants = data ? JSON.parse(data) : [];
+      
+      if (participants.length === 0) {
+        alert('No hay datos para exportar');
+        return;
+      }
+      
+      // Crear texto para copiar
+      let text = '📋 PARTICIPANTES SORTEO SUILATAM\n\n';
+      participants.forEach((p, i) => {
+        text += `${i + 1}. ${p.name}\n`;
+        text += `   Email: ${p.email}\n`;
+        text += `   Wallet: ${p.wallet}\n`;
+        text += `   Fecha: ${p.timestamp}\n\n`;
+      });
+      
+      // Copiar al portapapeles
+      navigator.clipboard.writeText(text).then(() => {
+        alert('✅ Datos copiados al portapapeles');
+      }).catch(() => {
+        // Alternativa: descargar como archivo
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'participantes_suilatam.txt';
+        a.click();
+      });
+    }
+    
+    // Limpiar todos los datos
+    function clearAllData() {
+      if (confirm('⚠️ ¿Seguro que quieres eliminar TODOS los participantes?')) {
+        localStorage.removeItem('suilatam_participants');
+        localStorage.removeItem('suilatam_last_update');
+        updateDashboard();
+        alert('✅ Datos eliminados');
+      }
+    }
+    
+    // Actualizar al cargar
+    updateDashboard();
+    
+    // Auto-actualizar cada 2 segundos
+    setInterval(updateDashboard, 2000);
+    
+    // Escuchar cambios de storage (para sincronización entre pestañas)
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'suilatam_participants') {
+        console.log('🔄 Datos actualizados desde otra pestaña');
+        updateDashboard();
+      }
+    });
+    
+    console.log('✅ Dashboard Simple iniciado');
+  </script>
+</body>
+</html> 
