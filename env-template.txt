@@ -1,0 +1,25 @@
+# 🔑 ARCHIVO .env PARA SUILATAM SORTEO
+# ====================================
+# Copia este contenido en un archivo llamado '.env' en la raíz de tu proyecto
+
+# Token de Notion (reemplaza con tu token real)
+NOTION_TOKEN=secret_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+# Database ID (ya configurado)
+NOTION_DATABASE_ID=2044f6dcc27a8078abdef6b35924abba
+
+# URL base de la API
+NOTION_API_BASE_URL=https://api.notion.com/v1
+
+# Configuración del proyecto
+PROJECT_NAME=SuiLatam Sorteo
+SITE_URL=https://suilatam.vercel.app
+
+# Configuración opcional
+MAX_PARTICIPANTS=1000
+DEBUG_MODE=true
+
+# ⚠️ IMPORTANTE:
+# 1. Agrega '.env' al archivo .gitignore
+# 2. NUNCA subas el .env a GitHub
+# 3. El token debe mantenerse secreto 
