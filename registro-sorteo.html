@@ -355,32 +355,20 @@
             wallet: formData.get('wallet').trim()
         };
         
-        // Validaciones
-        if (!participantInfo.name || participantInfo.name.length < 2) {
-            alert('❌ El nombre debe tener al menos 2 caracteres.');
+        // Validaciones SIMPLIFICADAS PARA PRUEBAS
+        if (!participantInfo.name) {
+            alert('❌ Por favor ingresa un nombre.');
             return;
         }
         
-        if (!participantInfo.email || !participantInfo.email.includes('@')) {
-            alert('❌ El email no es válido.');
-            return;
+        // Email opcional para pruebas
+        if (!participantInfo.email) {
+            participantInfo.email = 'test' + Date.now() + '@test.com';
         }
         
-        if (!participantInfo.wallet || participantInfo.wallet.length < 10) {
-            alert('❌ La dirección de wallet debe ser válida.');
-            return;
-        }
-        
-        // Verificar duplicados
-        const participants = dataManager.getParticipants();
-        const isDuplicate = participants.some(p => 
-            p.email.toLowerCase() === participantInfo.email.toLowerCase() ||
-            p.wallet === participantInfo.wallet
-        );
-        
-        if (isDuplicate) {
-            alert('⚠️ Este email o wallet ya está registrado.');
-            return;
+        // Wallet opcional para pruebas
+        if (!participantInfo.wallet) {
+            participantInfo.wallet = '0x' + Math.random().toString(36).substring(2, 15);
         }
         
         // Mostrar loading
@@ -462,26 +450,17 @@
         }
     });
 
-    // Validación en tiempo real
+    // Validación en tiempo real SIMPLIFICADA
     document.getElementById('wallet').addEventListener('input', function(e) {
         const wallet = e.target.value;
         const feedback = document.getElementById('walletFeedback') || createFeedbackElement(e.target);
         
-        if (wallet.length === 0) {
-            feedback.textContent = '';
-            feedback.className = 'feedback';
-        } else if (wallet.length < 10) {
-            feedback.textContent = '⚠️ Muy corta';
-            feedback.className = 'feedback warning';
-        } else if (wallet.startsWith('0x') && wallet.length >= 42) {
-            feedback.textContent = '✅ Wallet válida';
-            feedback.className = 'feedback success';
-        } else if (wallet.length >= 20) {
-            feedback.textContent = '✅ Formato correcto';
+        if (wallet.length > 0) {
+            feedback.textContent = '✅ Ok para pruebas';
             feedback.className = 'feedback success';
         } else {
-            feedback.textContent = '⏳ Continúa escribiendo...';
-            feedback.className = 'feedback info';
+            feedback.textContent = '';
+            feedback.className = 'feedback';
         }
     });
 
