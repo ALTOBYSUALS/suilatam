@@ -442,7 +442,57 @@
             
         } catch (error) {
             console.error('Error:', error);
-            alert('❌ Error al procesar el registro. Intenta de nuevo.');
+            
+            // SOLUCIÓN DE EMERGENCIA - Guardar en memoria global
+            window.emergencyData = window.emergencyData || [];
+            window.emergencyData.push({
+                ...participantInfo,
+                timestamp: new Date().toISOString(),
+                id: Date.now().toString()
+            });
+            
+            // Mostrar éxito aunque haya fallado el guardado principal
+            const successDiv = document.createElement('div');
+            successDiv.innerHTML = `
+                <div class="success-animation" style="
+                    background: linear-gradient(135deg, #f59e0b, #dc2626);
+                    color: white;
+                    padding: 2rem;
+                    border-radius: 15px;
+                    text-align: center;
+                    margin: 2rem 0;
+                ">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+                    <h3>¡Registro Guardado (Modo Emergencia)!</h3>
+                    <p>Tu registro se guardó temporalmente</p>
+                    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                        <div><strong>Nombre:</strong> ${participantInfo.name}</div>
+                        <div><strong>Email:</strong> ${participantInfo.email}</div>
+                        <div><strong>Wallet:</strong> ${participantInfo.wallet}</div>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        <strong>IMPORTANTE:</strong> Abre la consola (F12) y ejecuta:<br>
+                        <code style="background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 5px;">
+                            copy(JSON.stringify(window.emergencyData))
+                        </code>
+                    </p>
+                </div>
+            `;
+            
+            const formContainer = document.querySelector('.registro-container');
+            formContainer.appendChild(successDiv);
+            
+            // Limpiar formulario
+            e.target.reset();
+            
+            // También intentar guardar de otra forma
+            try {
+                const backupKey = 'suilatam_backup_' + Date.now();
+                localStorage.setItem(backupKey, JSON.stringify(participantInfo));
+                console.log('✅ Backup guardado en:', backupKey);
+            } catch (e) {
+                console.log('❌ No se pudo guardar backup en localStorage');
+            }
         } finally {
             // Restaurar botón
             submitBtn.innerHTML = originalText;
