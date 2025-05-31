@@ -16,6 +16,9 @@ class QRScanner {
       cancelBtn: document.getElementById('cancel-registration')
     };
     
+    // Debug: verificar que todos los elementos existan
+    console.log('🔍 Elementos del QR Scanner:', this.elements);
+    
     this.init();
   }
 
@@ -29,6 +32,15 @@ class QRScanner {
     this.elements.stopBtn.addEventListener('click', () => this.stopScanner());
     this.elements.participantForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
     this.elements.cancelBtn.addEventListener('click', () => this.hideRegistrationForm());
+    
+    // BOTÓN DE PRUEBA
+    const testBtn = document.getElementById('test-qr');
+    if (testBtn) {
+      testBtn.addEventListener('click', () => {
+        console.log('🧪 Simulando escaneo de QR de prueba');
+        this.onScanSuccess('premio-secreto-suilatam', null);
+      });
+    }
   }
 
   async startScanner() {
@@ -97,7 +109,7 @@ class QRScanner {
   }
 
   async onScanSuccess(decodedText, decodedResult) {
-    console.log(`Código QR detectado: ${decodedText}`);
+    console.log(`🎯 Código QR detectado: ${decodedText}`);
     
     // Add success animation
     this.elements.reader.classList.add('qr-success-animation');
@@ -109,14 +121,17 @@ class QRScanner {
     
     // Check if it's our special QR code
     if (this.isValidSuiLatamQR(decodedText)) {
+      console.log('✅ QR válido detectado, guardando datos...');
       // Store the QR data for later use
       this.scannedQRData = decodedText;
       
       // Show registration form instead of redirecting immediately
       setTimeout(() => {
+        console.log('📝 Mostrando formulario de registro...');
         this.showRegistrationForm();
       }, 1000);
     } else {
+      console.log('❌ QR no válido');
       // Handle other QR codes or show invalid message
       setTimeout(() => {
         this.updateStatus('error', 'Código QR no válido para SuiLatam');
@@ -168,6 +183,15 @@ class QRScanner {
   }
 
   showRegistrationForm() {
+    console.log('📋 Ejecutando showRegistrationForm()');
+    console.log('Elements found:', {
+      reader: !!this.elements.reader,
+      startBtn: !!this.elements.startBtn,
+      stopBtn: !!this.elements.stopBtn,
+      status: !!this.elements.status,
+      registrationForm: !!this.elements.registrationForm
+    });
+    
     // Hide scanner interface
     this.elements.reader.style.display = 'none';
     this.elements.startBtn.style.display = 'none';
@@ -176,11 +200,13 @@ class QRScanner {
     
     // Show registration form
     this.elements.registrationForm.style.display = 'block';
+    console.log('✅ Formulario mostrado, display:', this.elements.registrationForm.style.display);
     
     // Focus on first input
     const firstInput = this.elements.participantForm.querySelector('input');
     if (firstInput) {
       setTimeout(() => firstInput.focus(), 300);
+      console.log('🎯 Focus puesto en primer input');
     }
   }
 
