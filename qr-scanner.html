@@ -76,6 +76,75 @@
           </div>
         </div>
 
+        <!-- Formulario de Registro (aparece después del escaneo) -->
+        <div class="registration-form" id="registration-form" style="display: none;">
+          <div class="form-header">
+            <h2>
+              <i class="fas fa-trophy"></i>
+              ¡QR Escaneado Exitosamente!
+            </h2>
+            <p>Completa tus datos para participar en el sorteo</p>
+          </div>
+          
+          <form id="participant-form" class="form-grid">
+            <div class="form-group">
+              <label for="participant-name">
+                <i class="fas fa-user"></i>
+                Nombre Completo
+              </label>
+              <input 
+                type="text" 
+                id="participant-name" 
+                name="name" 
+                required 
+                placeholder="Ingresa tu nombre completo"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="participant-email">
+                <i class="fas fa-envelope"></i>
+                Correo Electrónico
+              </label>
+              <input 
+                type="email" 
+                id="participant-email" 
+                name="email" 
+                required 
+                placeholder="tu@email.com"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="participant-wallet">
+                <i class="fas fa-wallet"></i>
+                Dirección de Billetera Sui
+              </label>
+              <input 
+                type="text" 
+                id="participant-wallet" 
+                name="wallet" 
+                required 
+                placeholder="0x..."
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-check"></i>
+                Registrarme en el Sorteo
+              </button>
+              <button type="button" id="cancel-registration" class="btn btn-outline">
+                <i class="fas fa-times"></i>
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+
         <div class="qr-instructions">
           <h3>¿Cómo usar el escáner?</h3>
           <div class="instructions-grid">

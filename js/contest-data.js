@@ -22,7 +22,7 @@ class ContestDataManager {
   }
 
   // Capturar datos del participante
-  async captureParticipant(qrData) {
+  async captureParticipant(participantInfo) {
     // Generar ID único para el participante
     const participantId = Date.now() + Math.random().toString(36).substring(2);
     
@@ -35,7 +35,11 @@ class ContestDataManager {
       id: participantId,
       timestamp: formattedDate,
       rawTimestamp: now.toISOString(),
-      qrCode: qrData,
+      // Datos del formulario o código QR directo
+      name: participantInfo.name || 'Anónimo',
+      email: participantInfo.email || '',
+      wallet: participantInfo.wallet || '',
+      qrCode: participantInfo.qrCode || participantInfo,
       userAgent: navigator.userAgent,
       device: this.getDeviceType(),
       browser: this.getBrowserInfo(),
@@ -137,7 +141,9 @@ class ContestDataManager {
       row.innerHTML = `
         <td>${index + 1}</td>
         <td>${participant.timestamp}</td>
-        <td>${participant.qrCode}</td>
+        <td>${participant.name}</td>
+        <td>${participant.email}</td>
+        <td>${participant.wallet.substring(0, 10)}...${participant.wallet.substring(participant.wallet.length - 6)}</td>
         <td>${participant.device}</td>
         <td>${participant.browser}</td>
       `;

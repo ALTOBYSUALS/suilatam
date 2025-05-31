@@ -5,11 +5,15 @@ class QRScanner {
     this.html5QrCode = null;
     this.isScanning = false;
     this.contestDataManager = new ContestDataManager();
+    this.scannedQRData = null;
     this.elements = {
       reader: document.getElementById('qr-reader'),
       startBtn: document.getElementById('start-scanner'),
       stopBtn: document.getElementById('stop-scanner'),
-      status: document.getElementById('qr-status')
+      status: document.getElementById('qr-status'),
+      registrationForm: document.getElementById('registration-form'),
+      participantForm: document.getElementById('participant-form'),
+      cancelBtn: document.getElementById('cancel-registration')
     };
     
     this.init();
@@ -23,6 +27,8 @@ class QRScanner {
   setupEventListeners() {
     this.elements.startBtn.addEventListener('click', () => this.startScanner());
     this.elements.stopBtn.addEventListener('click', () => this.stopScanner());
+    this.elements.participantForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
+    this.elements.cancelBtn.addEventListener('click', () => this.hideRegistrationForm());
   }
 
   async startScanner() {
@@ -103,20 +109,13 @@ class QRScanner {
     
     // Check if it's our special QR code
     if (this.isValidSuiLatamQR(decodedText)) {
-      // 🎯 CAPTURAR DATOS DEL PARTICIPANTE
-      try {
-        await this.contestDataManager.captureParticipant(decodedText);
-        this.updateStatus('success', '¡Registrado en el sorteo! Redirigiendo...');
-      } catch (error) {
-        console.error('Error capturing participant data:', error);
-        // Continuar aunque falle el registro
-        this.updateStatus('success', '¡Código válido! Redirigiendo...');
-      }
+      // Store the QR data for later use
+      this.scannedQRData = decodedText;
       
-      // Redirect to prize page after a short delay
+      // Show registration form instead of redirecting immediately
       setTimeout(() => {
-        window.location.href = 'premio-secreto.html';
-      }, 2000);
+        this.showRegistrationForm();
+      }, 1000);
     } else {
       // Handle other QR codes or show invalid message
       setTimeout(() => {
@@ -166,6 +165,135 @@ class QRScanner {
     
     iconEl.className = icons[type] || 'fas fa-info-circle';
     messageEl.textContent = message;
+  }
+
+  showRegistrationForm() {
+    // Hide scanner interface
+    this.elements.reader.style.display = 'none';
+    this.elements.startBtn.style.display = 'none';
+    this.elements.stopBtn.style.display = 'none';
+    this.elements.status.style.display = 'none';
+    
+    // Show registration form
+    this.elements.registrationForm.style.display = 'block';
+    
+    // Focus on first input
+    const firstInput = this.elements.participantForm.querySelector('input');
+    if (firstInput) {
+      setTimeout(() => firstInput.focus(), 300);
+    }
+  }
+
+  hideRegistrationForm() {
+    // Show scanner interface again
+    this.elements.reader.style.display = 'block';
+    this.elements.startBtn.style.display = 'inline-flex';
+    this.elements.status.style.display = 'block';
+    
+    // Hide registration form
+    this.elements.registrationForm.style.display = 'none';
+    
+    // Reset form
+    this.elements.participantForm.reset();
+    this.scannedQRData = null;
+    
+    // Reset status
+    this.updateStatus('info', 'Presiona "Activar Cámara" para comenzar');
+    this.elements.startBtn.disabled = false;
+  }
+
+  async handleFormSubmit(event) {
+    event.preventDefault();
+    
+    // Get form data
+    const formData = new FormData(event.target);
+    const participantData = {
+      name: formData.get('name').trim(),
+      email: formData.get('email').trim(),
+      wallet: formData.get('wallet').trim(),
+      qrCode: this.scannedQRData
+    };
+    
+    // Validate form data
+    if (!this.validateParticipantData(participantData)) {
+      return;
+    }
+    
+    try {
+      // Disable submit button
+      const submitBtn = event.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+      
+      // Save participant data
+      await this.contestDataManager.captureParticipant(participantData);
+      
+      // Show success message
+      this.showSuccessMessage();
+      
+      // Redirect to prize page after delay
+      setTimeout(() => {
+        window.location.href = 'premio-secreto.html';
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Error registering participant:', error);
+      alert('Error al registrar participante. Por favor intenta de nuevo.');
+      
+      // Re-enable submit button
+      const submitBtn = event.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-check"></i> Registrarme en el Sorteo';
+    }
+  }
+
+  validateParticipantData(data) {
+    // Validate name
+    if (!data.name || data.name.length < 2) {
+      alert('Por favor ingresa un nombre válido');
+      return false;
+    }
+    
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!data.email || !emailRegex.test(data.email)) {
+      alert('Por favor ingresa un correo electrónico válido');
+      return false;
+    }
+    
+    // Validate wallet address (basic Sui wallet format)
+    if (!data.wallet || !data.wallet.startsWith('0x') || data.wallet.length < 10) {
+      alert('Por favor ingresa una dirección de billetera Sui válida (debe comenzar con 0x)');
+      return false;
+    }
+    
+    return true;
+  }
+
+  showSuccessMessage() {
+    // Hide form
+    this.elements.registrationForm.style.display = 'none';
+    
+    // Show success message
+    const successMessage = document.createElement('div');
+    successMessage.className = 'success-message';
+    successMessage.innerHTML = `
+      <div class="success-content">
+        <div class="success-icon">
+          <i class="fas fa-trophy"></i>
+        </div>
+        <h2>¡Registrado Exitosamente!</h2>
+        <p>Ya estás participando en el sorteo de SuiLatam</p>
+        <div class="success-spinner">
+          <i class="fas fa-spinner fa-spin"></i>
+          <span>Redirigiendo a tu premio...</span>
+        </div>
+      </div>
+    `;
+    
+    // Insert success message
+    const container = document.querySelector('.qr-container');
+    container.appendChild(successMessage);
   }
 }
 
