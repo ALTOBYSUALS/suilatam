@@ -275,16 +275,16 @@
         </div>
       </div>
 
-      <form id="registro-form">
+      <form id="raffleForm">
         <div class="form-group">
-          <label for="nombre">
+          <label for="name">
             <i class="fas fa-user"></i>
             Nombre Completo
           </label>
           <input 
             type="text" 
-            id="nombre" 
-            name="nombre" 
+            id="name" 
+            name="name" 
             class="form-input" 
             placeholder="Tu nombre completo"
             required
@@ -339,72 +339,208 @@
 
   <!-- Scripts -->
   <script src="js/contest-data.js"></script>
+  <script src="js/supabase-data.js"></script>
+
   <script>
-    // Inicializar el sistema de datos
-    const contestData = new ContestDataManager();
-    
-    // Manejar el formulario
-    document.getElementById('registro-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const submitBtn = document.getElementById('submit-btn');
-      const form = e.target;
-      const successMessage = document.getElementById('success-message');
-      
-      // Obtener datos del formulario
-      const formData = new FormData(form);
-      const participantData = {
-        name: formData.get('nombre').trim(),
-        email: formData.get('email').trim(),
-        wallet: formData.get('wallet').trim(),
-        qrCode: 'registro-directo-sorteo-suilatam'
-      };
-      
-      // Validar datos
-      if (!participantData.name || participantData.name.length < 2) {
-        alert('Por favor ingresa un nombre válido');
-        return;
-      }
-      
-      if (!participantData.email || !/\S+@\S+\.\S+/.test(participantData.email)) {
-        alert('Por favor ingresa un correo electrónico válido');
-        return;
-      }
-      
-      if (!participantData.wallet || !participantData.wallet.startsWith('0x') || participantData.wallet.length < 10) {
-        alert('Por favor ingresa una dirección de wallet SUI válida (debe comenzar con 0x)');
-        return;
-      }
-      
-      try {
-        // Deshabilitar botón
-        submitBtn.disabled = true;
+    // Inicializar sistema de datos
+    const dataManager = new SupabaseDataManager();
+
+    document.getElementById('raffleForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const participantInfo = {
+            name: formData.get('name').trim(),
+            email: formData.get('email').trim(),
+            wallet: formData.get('wallet').trim()
+        };
+        
+        // Validaciones
+        if (!participantInfo.name || participantInfo.name.length < 2) {
+            alert('❌ El nombre debe tener al menos 2 caracteres.');
+            return;
+        }
+        
+        if (!participantInfo.email || !participantInfo.email.includes('@')) {
+            alert('❌ El email no es válido.');
+            return;
+        }
+        
+        if (!participantInfo.wallet || participantInfo.wallet.length < 10) {
+            alert('❌ La dirección de wallet debe ser válida.');
+            return;
+        }
+        
+        // Verificar duplicados
+        const participants = dataManager.getParticipants();
+        const isDuplicate = participants.some(p => 
+            p.email.toLowerCase() === participantInfo.email.toLowerCase() ||
+            p.wallet === participantInfo.wallet
+        );
+        
+        if (isDuplicate) {
+            alert('⚠️ Este email o wallet ya está registrado.');
+            return;
+        }
+        
+        // Mostrar loading
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
+        submitBtn.disabled = true;
         
-        // Guardar datos
-        await contestData.captureParticipant(participantData);
-        
-        // Mostrar éxito
-        form.style.display = 'none';
-        successMessage.style.display = 'block';
-        
-        // Resetear después de 5 segundos
-        setTimeout(() => {
-          form.style.display = 'block';
-          successMessage.style.display = 'none';
-          form.reset();
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Registrarme en el Sorteo';
-        }, 5000);
-        
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Error al registrar. Por favor intenta de nuevo.');
-        
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Registrarme en el Sorteo';
-      }
+        try {
+            // Guardar participante con nuevo sistema
+            const result = await dataManager.captureParticipant(participantInfo);
+            
+            if (result) {
+                // Limpiar formulario
+                e.target.reset();
+                
+                // Mostrar mensaje de éxito
+                const successDiv = document.createElement('div');
+                successDiv.innerHTML = `
+                    <div class="success-animation" style="
+                        background: linear-gradient(135deg, #22c55e, #16a34a);
+                        color: white;
+                        padding: 2rem;
+                        border-radius: 15px;
+                        text-align: center;
+                        margin: 2rem 0;
+                        animation: slideInUp 0.5s ease;
+                    ">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                        <h3>¡Registro Exitoso!</h3>
+                        <p style="margin: 1rem 0;">Tu participación ha sido confirmada</p>
+                        <div style="
+                            background: rgba(255,255,255,0.2);
+                            padding: 1rem;
+                            border-radius: 10px;
+                            margin-top: 1rem;
+                            font-family: monospace;
+                        ">
+                            <div><strong>Nombre:</strong> ${participantInfo.name}</div>
+                            <div><strong>Email:</strong> ${participantInfo.email}</div>
+                            <div><strong>Wallet:</strong> ${participantInfo.wallet.substring(0, 15)}...</div>
+                            <div><strong>ID:</strong> ${result.id}</div>
+                        </div>
+                        <p style="margin-top: 1rem; opacity: 0.9;">
+                            ✅ <strong>Datos sincronizados globalmente</strong>
+                        </p>
+                    </div>
+                `;
+                
+                const formContainer = document.querySelector('.form-container');
+                formContainer.appendChild(successDiv);
+                
+                // Auto-scroll a éxito
+                successDiv.scrollIntoView({ behavior: 'smooth' });
+                
+                // Remover mensaje después de 8 segundos
+                setTimeout(() => {
+                    if (formContainer.contains(successDiv)) {
+                        successDiv.style.animation = 'slideOutDown 0.5s ease';
+                        setTimeout(() => {
+                            if (formContainer.contains(successDiv)) {
+                                formContainer.removeChild(successDiv);
+                            }
+                        }, 500);
+                    }
+                }, 8000);
+                
+            } else {
+                throw new Error('Error procesando registro');
+            }
+            
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ Error al procesar el registro. Intenta de nuevo.');
+        } finally {
+            // Restaurar botón
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
     });
+
+    // Validación en tiempo real
+    document.getElementById('wallet').addEventListener('input', function(e) {
+        const wallet = e.target.value;
+        const feedback = document.getElementById('walletFeedback') || createFeedbackElement(e.target);
+        
+        if (wallet.length === 0) {
+            feedback.textContent = '';
+            feedback.className = 'feedback';
+        } else if (wallet.length < 10) {
+            feedback.textContent = '⚠️ Muy corta';
+            feedback.className = 'feedback warning';
+        } else if (wallet.startsWith('0x') && wallet.length >= 42) {
+            feedback.textContent = '✅ Wallet válida';
+            feedback.className = 'feedback success';
+        } else if (wallet.length >= 20) {
+            feedback.textContent = '✅ Formato correcto';
+            feedback.className = 'feedback success';
+        } else {
+            feedback.textContent = '⏳ Continúa escribiendo...';
+            feedback.className = 'feedback info';
+        }
+    });
+
+    function createFeedbackElement(input) {
+        const feedback = document.createElement('div');
+        feedback.id = input.id + 'Feedback';
+        feedback.className = 'feedback';
+        input.parentNode.appendChild(feedback);
+        return feedback;
+    }
+
+    // Escuchar actualizaciones de datos
+    window.addEventListener('participantAdded', function(e) {
+        console.log('🎉 Nuevo participante añadido:', e.detail);
+    });
+
+    window.addEventListener('dataUpdated', function() {
+        console.log('🔄 Datos actualizados desde otra pestaña');
+    });
+
+    // CSS para animaciones
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutDown {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+        }
+        
+        .feedback {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            padding: 0.25rem 0;
+        }
+        
+        .feedback.success { color: #22c55e; }
+        .feedback.warning { color: #f59e0b; }
+        .feedback.error { color: #ef4444; }
+        .feedback.info { color: #3b82f6; }
+    `;
+    document.head.appendChild(style);
+
+    console.log('✅ Sistema de registro sincronizado inicializado');
   </script>
 </body>
 </html> 
