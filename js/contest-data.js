@@ -1,53 +1,69 @@
 // === CONTEST DATA SYSTEM ===
-// Sistema para almacenar datos del concurso/sorteo
+// Sistema para almacenar datos del concurso/sorteo con LocalStorage
 
 class ContestDataManager {
   constructor() {
-    // URL del Google Apps Script (tu lo configurarás)
-    this.scriptURL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
-    this.isEnabled = false; // Cambiar a true cuando tengas la URL
+    this.storageKey = 'suilatam_participants';
+    this.isEnabled = true;
+    this.initCounter();
+  }
+
+  // Inicializar contador de participantes
+  initCounter() {
+    // Crear o actualizar el contador en tiempo real si estamos en la página de admin
+    if (window.location.pathname.includes('admin-stats.html')) {
+      this.updateParticipantCounter();
+      
+      // Actualizar cada 3 segundos por si hay nuevos participantes
+      setInterval(() => {
+        this.updateParticipantCounter();
+      }, 3000);
+    }
   }
 
   // Capturar datos del participante
   async captureParticipant(qrData) {
-    if (!this.isEnabled) {
-      console.log('Contest data system disabled');
-      return;
-    }
-
+    // Generar ID único para el participante
+    const participantId = Date.now() + Math.random().toString(36).substring(2);
+    
+    // Obtener fecha actual formateada
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+    
+    // Datos del participante
     const participantData = {
-      timestamp: new Date().toISOString(),
+      id: participantId,
+      timestamp: formattedDate,
+      rawTimestamp: now.toISOString(),
       qrCode: qrData,
       userAgent: navigator.userAgent,
-      language: navigator.language,
-      screenSize: `${screen.width}x${screen.height}`,
+      device: this.getDeviceType(),
+      browser: this.getBrowserInfo(),
+      language: navigator.language || 'es-MX',
+      screenSize: `${window.innerWidth}x${window.innerHeight}`,
       referrer: document.referrer || 'direct',
-      sessionId: this.generateSessionId(),
-      ipHash: await this.getIPHash(), // Para evitar duplicados
+      sessionId: this.generateSessionId()
     };
 
     try {
-      // Enviar a Google Sheets
-      const response = await fetch(this.scriptURL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(participantData)
-      });
-
-      if (response.ok) {
-        console.log('✅ Participant data saved successfully');
-        this.showSuccessMessage();
-      } else {
-        throw new Error('Failed to save data');
-      }
-
+      // Guardar en localStorage
+      const stored = this.getParticipants();
+      stored.push(participantData);
+      localStorage.setItem(this.storageKey, JSON.stringify(stored));
+      
+      console.log('✅ Participante guardado localmente:', participantData);
+      this.showSuccessMessage();
+      
+      return participantData;
     } catch (error) {
-      console.error('❌ Error saving participant data:', error);
-      // Guardar localmente como respaldo
-      this.saveLocally(participantData);
+      console.error('❌ Error guardando participante:', error);
+      return null;
     }
+  }
+
+  // Obtener todos los participantes
+  getParticipants() {
+    return JSON.parse(localStorage.getItem(this.storageKey) || '[]');
   }
 
   // Generar ID de sesión único
@@ -55,38 +71,213 @@ class ContestDataManager {
     return 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 
-  // Obtener hash de IP para identificar usuarios únicos
-  async getIPHash() {
-    try {
-      // Usar un servicio gratuito para obtener IP
-      const response = await fetch('https://api.ipify.org?format=json');
-      const data = await response.json();
+  // Detectar tipo de dispositivo
+  getDeviceType() {
+    const ua = navigator.userAgent;
+    if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+      return 'Tablet';
+    }
+    if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+      return 'Móvil';
+    }
+    return 'Desktop';
+  }
+
+  // Obtener información del navegador
+  getBrowserInfo() {
+    const ua = navigator.userAgent;
+    let browserName = "Desconocido";
+    
+    if (ua.match(/chrome|chromium|crios/i)) {
+      browserName = "Chrome";
+    } else if (ua.match(/firefox|fxios/i)) {
+      browserName = "Firefox";
+    } else if (ua.match(/safari/i)) {
+      browserName = "Safari";
+    } else if (ua.match(/opr\//i)) {
+      browserName = "Opera";
+    } else if (ua.match(/edg/i)) {
+      browserName = "Edge";
+    }
+    
+    return browserName;
+  }
+
+  // Actualizar contador de participantes
+  updateParticipantCounter() {
+    const counterElement = document.getElementById('participant-counter');
+    if (counterElement) {
+      const count = this.getParticipants().length;
+      counterElement.textContent = count;
       
-      // Crear hash simple de la IP
-      const ip = data.ip;
-      let hash = 0;
-      for (let i = 0; i < ip.length; i++) {
-        const char = ip.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash; // Convert to 32-bit integer
-      }
-      return 'ip_' + Math.abs(hash).toString(36);
-    } catch (error) {
-      return 'unknown_' + Date.now();
+      // Actualizar la tabla si existe
+      this.updateParticipantsTable();
     }
   }
 
-  // Guardar localmente como respaldo
-  saveLocally(data) {
-    const stored = JSON.parse(localStorage.getItem('contest_participants') || '[]');
-    stored.push(data);
-    localStorage.setItem('contest_participants', JSON.stringify(stored));
-    console.log('💾 Data saved locally as backup');
+  // Actualizar tabla de participantes
+  updateParticipantsTable() {
+    const tableBody = document.getElementById('participants-table-body');
+    if (!tableBody) return;
+    
+    // Obtener participantes y ordenar por más recientes primero
+    const participants = this.getParticipants();
+    participants.sort((a, b) => new Date(b.rawTimestamp) - new Date(a.rawTimestamp));
+    
+    // Limpiar tabla
+    tableBody.innerHTML = '';
+    
+    // Llenar con datos
+    participants.forEach((participant, index) => {
+      const row = document.createElement('tr');
+      
+      // Añadir clases para filas alternadas
+      row.className = index % 2 === 0 ? 'even-row' : 'odd-row';
+      
+      row.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${participant.timestamp}</td>
+        <td>${participant.qrCode}</td>
+        <td>${participant.device}</td>
+        <td>${participant.browser}</td>
+      `;
+      
+      tableBody.appendChild(row);
+    });
   }
 
-  // Obtener datos locales (para respaldo)
-  getLocalData() {
-    return JSON.parse(localStorage.getItem('contest_participants') || '[]');
+  // Exportar a diferentes formatos
+  exportData(format = 'json') {
+    const participants = this.getParticipants();
+    
+    // Si no hay participantes, mostrar mensaje
+    if (participants.length === 0) {
+      alert('No hay participantes registrados aún.');
+      return;
+    }
+    
+    switch (format) {
+      case 'json':
+        this.exportToJSON(participants);
+        break;
+      case 'csv':
+        this.exportToCSV(participants);
+        break;
+      case 'txt':
+        this.exportToTXT(participants);
+        break;
+      case 'copy':
+        this.copyToClipboard(participants);
+        break;
+    }
+  }
+
+  // Exportar a JSON
+  exportToJSON(data) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    this.downloadBlob(blob, `participantes_suilatam_${this.getFormattedDate()}.json`);
+  }
+
+  // Exportar a CSV
+  exportToCSV(data) {
+    // Cabeceras
+    const headers = ['ID', 'Fecha', 'Código QR', 'Dispositivo', 'Navegador', 'Idioma'];
+    
+    // Convertir datos a filas CSV
+    const csvRows = [
+      headers.join(','), // Cabecera
+      ...data.map(p => [
+        p.id,
+        p.timestamp,
+        p.qrCode,
+        p.device,
+        p.browser,
+        p.language
+      ].join(','))
+    ];
+    
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
+    this.downloadBlob(blob, `participantes_suilatam_${this.getFormattedDate()}.csv`);
+  }
+
+  // Exportar a TXT (para WhatsApp)
+  exportToTXT(data) {
+    let txtContent = `📋 PARTICIPANTES SUILATAM (${data.length})\n`;
+    txtContent += `📅 Exportado: ${new Date().toLocaleString()}\n\n`;
+    
+    data.forEach((p, index) => {
+      txtContent += `${index + 1}. [${p.timestamp}] ${p.qrCode}\n`;
+    });
+    
+    const blob = new Blob([txtContent], {type: 'text/plain;charset=utf-8;'});
+    this.downloadBlob(blob, `participantes_suilatam_${this.getFormattedDate()}.txt`);
+  }
+
+  // Copiar al portapapeles (ideal para WhatsApp)
+  copyToClipboard(data) {
+    let txtContent = `📋 PARTICIPANTES SUILATAM (${data.length})\n`;
+    txtContent += `📅 Exportado: ${new Date().toLocaleString()}\n\n`;
+    
+    data.forEach((p, index) => {
+      txtContent += `${index + 1}. [${p.timestamp}] ${p.qrCode}\n`;
+    });
+    
+    // Copiar al portapapeles
+    navigator.clipboard.writeText(txtContent)
+      .then(() => {
+        alert('✅ Lista de participantes copiada al portapapeles. ¡Lista para pegar en WhatsApp!');
+      })
+      .catch(err => {
+        console.error('Error copiando al portapapeles:', err);
+        alert('❌ Error al copiar. Intenta con otro método de exportación.');
+      });
+  }
+
+  // Descargar blob
+  downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // Obtener fecha formateada para archivos
+  getFormattedDate() {
+    const now = new Date();
+    return `${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}`;
+  }
+
+  // Sortear un ganador aleatorio
+  drawWinner() {
+    const participants = this.getParticipants();
+    if (participants.length === 0) {
+      alert('No hay participantes para realizar el sorteo.');
+      return null;
+    }
+    
+    // Seleccionar ganador aleatorio
+    const randomIndex = Math.floor(Math.random() * participants.length);
+    const winner = participants[randomIndex];
+    
+    return winner;
+  }
+
+  // Limpiar todos los datos de participantes
+  clearAllData() {
+    if (confirm('⚠️ ¿Estás seguro de eliminar TODOS los participantes? Esta acción no se puede deshacer.')) {
+      localStorage.removeItem(this.storageKey);
+      alert('🗑️ Todos los datos han sido eliminados.');
+      
+      // Actualizar contador si estamos en la página de admin
+      if (window.location.pathname.includes('admin-stats.html')) {
+        this.updateParticipantCounter();
+      }
+    }
   }
 
   // Mostrar mensaje de éxito
@@ -133,100 +324,7 @@ class ContestDataManager {
       }, 300);
     }, 4000);
   }
-
-  // Configurar URL del script de Google
-  setScriptURL(url) {
-    this.scriptURL = url;
-    this.isEnabled = true;
-  }
-
-  // Obtener estadísticas básicas
-  getStats() {
-    const localData = this.getLocalData();
-    return {
-      totalParticipants: localData.length,
-      uniqueIPs: [...new Set(localData.map(p => p.ipHash))].length,
-      lastParticipant: localData[localData.length - 1]?.timestamp,
-      devices: this.analyzeDevices(localData)
-    };
-  }
-
-  // Analizar tipos de dispositivos
-  analyzeDevices(data) {
-    const devices = { mobile: 0, desktop: 0, tablet: 0 };
-    
-    data.forEach(participant => {
-      const ua = participant.userAgent.toLowerCase();
-      if (/mobile|android|iphone/.test(ua)) {
-        devices.mobile++;
-      } else if (/tablet|ipad/.test(ua)) {
-        devices.tablet++;
-      } else {
-        devices.desktop++;
-      }
-    });
-    
-    return devices;
-  }
 }
-
-// === GOOGLE APPS SCRIPT SETUP INSTRUCTIONS ===
-/*
-INSTRUCCIONES PARA CONFIGURAR GOOGLE SHEETS:
-
-1. Ve a https://script.google.com
-2. Crea un nuevo proyecto
-3. Pega este código en Code.gs:
-
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    
-    // ID de tu Google Sheet (crear uno nuevo)
-    const sheetId = 'TU_SHEET_ID_AQUI';
-    const sheet = SpreadsheetApp.openById(sheetId).getActiveSheet();
-    
-    // Si es la primera vez, agregar headers
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow([
-        'Timestamp',
-        'QR Code',
-        'User Agent',
-        'Language', 
-        'Screen Size',
-        'Referrer',
-        'Session ID',
-        'IP Hash'
-      ]);
-    }
-    
-    // Agregar datos del participante
-    sheet.appendRow([
-      data.timestamp,
-      data.qrCode,
-      data.userAgent,
-      data.language,
-      data.screenSize,
-      data.referrer,
-      data.sessionId,
-      data.ipHash
-    ]);
-    
-    return ContentService
-      .createTextOutput(JSON.stringify({status: 'success'}))
-      .setMimeType(ContentService.MimeType.JSON);
-      
-  } catch (error) {
-    return ContentService
-      .createTextOutput(JSON.stringify({status: 'error', message: error.toString()}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-4. Implementar como aplicación web
-5. Dar permisos de "Anyone can access"
-6. Copiar la URL y usarla en setScriptURL()
-*/
 
 // Exportar para usar en otros archivos
 if (typeof module !== 'undefined' && module.exports) {
