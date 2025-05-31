@@ -1,8 +1,8 @@
 // Configuración de Notion API
 const NOTION_CONFIG = {
-    // 🔑 REEMPLAZA ESTE TOKEN CON EL TUYO REAL
-    // Obtenlo en: https://developers.notion.com
-    NOTION_TOKEN: 'secret_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    // 🔑 TOKEN REAL DE HUGO - ¡YA CONFIGURADO!
+    // Obtenido de: https://developers.notion.com
+    NOTION_TOKEN: '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',
     
     // ✅ Tu Database ID (ya configurado desde tu URL)
     DATABASE_ID: '2044f6dcc27a8078abdef6b35924abba',
