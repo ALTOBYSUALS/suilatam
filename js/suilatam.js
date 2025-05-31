@@ -540,4 +540,256 @@ if ('serviceWorker' in navigator) {
                 console.log('SW registration failed: ', registrationError);
             });
     });
-} 
+}
+
+// ================================================== //
+// WEB3 MODERN EFFECTS                                //
+// ================================================== //
+function initWeb3Effects() {
+    createNodeConnections();
+    createFloatingDataBlocks();
+    initHoverEffects();
+}
+
+// Create node connection effect for Web3 visualization
+function createNodeConnections() {
+    const sections = document.querySelectorAll('.section');
+    
+    sections.forEach(section => {
+        // Create connection container
+        const connectionContainer = document.createElement('div');
+        connectionContainer.className = 'node-connections';
+        connectionContainer.style.position = 'absolute';
+        connectionContainer.style.top = '0';
+        connectionContainer.style.left = '0';
+        connectionContainer.style.width = '100%';
+        connectionContainer.style.height = '100%';
+        connectionContainer.style.pointerEvents = 'none';
+        connectionContainer.style.zIndex = '0';
+        connectionContainer.style.opacity = '0.15';
+        
+        // Create nodes
+        const nodeCount = 5 + Math.floor(Math.random() * 5);
+        
+        for (let i = 0; i < nodeCount; i++) {
+            const node = document.createElement('div');
+            node.className = 'node';
+            node.style.position = 'absolute';
+            node.style.width = '6px';
+            node.style.height = '6px';
+            node.style.borderRadius = '50%';
+            node.style.backgroundColor = getRandomColor();
+            
+            // Random position
+            node.style.left = Math.random() * 90 + 5 + '%';
+            node.style.top = Math.random() * 80 + 10 + '%';
+            
+            // Add glow effect
+            node.style.boxShadow = `0 0 10px ${node.style.backgroundColor}`;
+            
+            connectionContainer.appendChild(node);
+        }
+        
+        // Only add to sections that don't already have it
+        if (!section.querySelector('.node-connections')) {
+            section.style.position = 'relative';
+            section.insertBefore(connectionContainer, section.firstChild);
+        }
+    });
+    
+    // Connect nodes with lines
+    document.querySelectorAll('.node-connections').forEach(container => {
+        const nodes = container.querySelectorAll('.node');
+        const nodeArray = Array.from(nodes);
+        
+        nodeArray.forEach((node, index) => {
+            // Connect to 1-3 random nodes
+            const connectionCount = 1 + Math.floor(Math.random() * 3);
+            
+            for (let i = 0; i < connectionCount; i++) {
+                const targetIndex = Math.floor(Math.random() * nodeArray.length);
+                if (targetIndex !== index) {
+                    const line = document.createElement('div');
+                    line.className = 'connection-line';
+                    line.style.position = 'absolute';
+                    line.style.zIndex = '0';
+                    line.style.backgroundColor = node.style.backgroundColor;
+                    line.style.opacity = '0.6';
+                    
+                    // Set line dimensions and rotation
+                    const x1 = parseFloat(node.style.left);
+                    const y1 = parseFloat(node.style.top);
+                    const x2 = parseFloat(nodeArray[targetIndex].style.left);
+                    const y2 = parseFloat(nodeArray[targetIndex].style.top);
+                    
+                    const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                    const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                    
+                    line.style.width = `${length}%`;
+                    line.style.height = '1px';
+                    line.style.left = `${x1}%`;
+                    line.style.top = `${y1}%`;
+                    line.style.transformOrigin = '0 0';
+                    line.style.transform = `rotate(${angle}deg)`;
+                    
+                    container.appendChild(line);
+                }
+            }
+        });
+    });
+}
+
+// Create floating data blocks (simulating blockchain data)
+function createFloatingDataBlocks() {
+    const heroSection = document.querySelector('.hero');
+    if (!heroSection) return;
+    
+    const dataBlocksContainer = document.createElement('div');
+    dataBlocksContainer.className = 'floating-data-blocks';
+    dataBlocksContainer.style.position = 'absolute';
+    dataBlocksContainer.style.top = '0';
+    dataBlocksContainer.style.left = '0';
+    dataBlocksContainer.style.width = '100%';
+    dataBlocksContainer.style.height = '100%';
+    dataBlocksContainer.style.pointerEvents = 'none';
+    dataBlocksContainer.style.zIndex = '1';
+    
+    // Create floating data blocks
+    const blockCount = 8;
+    const blockData = [
+        '0x1a2b3c4d5e6f',
+        'SUI',
+        'Block #1337',
+        'TX',
+        '0xSUILATAM',
+        'Move',
+        'Blockchain',
+        'LatAm'
+    ];
+    
+    for (let i = 0; i < blockCount; i++) {
+        const dataBlock = document.createElement('div');
+        dataBlock.className = 'data-block';
+        dataBlock.textContent = blockData[i] || `0x${Math.floor(Math.random() * 16777215).toString(16)}`;
+        dataBlock.style.position = 'absolute';
+        dataBlock.style.padding = '4px 8px';
+        dataBlock.style.borderRadius = '4px';
+        dataBlock.style.backgroundColor = 'rgba(10, 10, 20, 0.7)';
+        dataBlock.style.color = getRandomColor();
+        dataBlock.style.border = `1px solid ${dataBlock.style.color}`;
+        dataBlock.style.fontSize = '10px';
+        dataBlock.style.fontFamily = 'monospace';
+        dataBlock.style.boxShadow = `0 0 10px ${dataBlock.style.color}`;
+        
+        // Random position
+        dataBlock.style.left = Math.random() * 80 + 10 + '%';
+        dataBlock.style.top = Math.random() * 80 + 10 + '%';
+        
+        // Animation
+        dataBlock.style.animation = `float ${5 + Math.random() * 10}s infinite ease-in-out`;
+        
+        dataBlocksContainer.appendChild(dataBlock);
+    }
+    
+    // Add animation keyframes
+    const styleSheet = document.createElement('style');
+    styleSheet.innerHTML = `
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(10px, 10px) rotate(2deg); }
+            50% { transform: translate(0, 20px) rotate(0deg); }
+            75% { transform: translate(-10px, 10px) rotate(-2deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+    `;
+    document.head.appendChild(styleSheet);
+    
+    // Only add if not already added
+    if (!heroSection.querySelector('.floating-data-blocks')) {
+        heroSection.style.position = 'relative';
+        heroSection.appendChild(dataBlocksContainer);
+    }
+}
+
+// Add modern hover effects to cards and buttons
+function initHoverEffects() {
+    // Glow effect on buttons
+    const buttons = document.querySelectorAll('.btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            btn.style.transform = 'translateY(-3px)';
+            btn.style.transition = 'all 0.3s ease';
+            btn.style.boxShadow = `0 10px 20px rgba(${hexToRgb(getComputedStyle(btn).backgroundColor)}, 0.3)`;
+        });
+        
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = 'translateY(0)';
+            btn.style.boxShadow = 'none';
+        });
+    });
+    
+    // 3D tilt effect on feature cards
+    const cards = document.querySelectorAll('.feature-card');
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const xPercent = x / rect.width;
+            const yPercent = y / rect.height;
+            
+            const rotateX = (yPercent - 0.5) * -10;
+            const rotateY = (xPercent - 0.5) * 10;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+            card.style.transition = 'transform 0.1s ease';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+            card.style.transition = 'transform 0.5s ease';
+        });
+    });
+}
+
+// Helper function to get random colors in web3 palette
+function getRandomColor() {
+    const colors = [
+        '#00d4ff', // Sui blue
+        '#a855f7', // Purple
+        '#f43f5e', // Pink
+        '#3b82f6', // Blue
+        '#10b981', // Green
+        '#f59e0b'  // Orange
+    ];
+    
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+// Helper function to convert hex to rgb
+function hexToRgb(hex) {
+    // If it's an rgb value already, extract the numbers
+    if (hex.startsWith('rgb')) {
+        const rgbValues = hex.match(/\d+/g);
+        if (rgbValues && rgbValues.length >= 3) {
+            return rgbValues.slice(0, 3).join(', ');
+        }
+    }
+    
+    // Otherwise convert hex to rgb
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (result) {
+        const r = parseInt(result[1], 16);
+        const g = parseInt(result[2], 16);
+        const b = parseInt(result[3], 16);
+        return `${r}, ${g}, ${b}`;
+    }
+    return '0, 0, 0';
+}
+
+// Initialize the Web3 effects after DOM content loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Add to the init functions
+    initWeb3Effects();
+}); 
