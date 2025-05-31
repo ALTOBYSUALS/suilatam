@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Admin Stats - SuiLatam</title>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+      color: white;
+      margin: 0;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .header h1 {
+      color: #4F8EE0;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+    
+    .stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+    }
+    
+    .stat-card h3 {
+      color: #4F8EE0;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #22c55e;
+      margin-bottom: 0.5rem;
+    }
+    
+    .participants-table {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      overflow-x: auto;
+    }
+    
+    .participants-table h3 {
+      color: #4F8EE0;
+      margin-bottom: 1rem;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    th {
+      background: rgba(79, 142, 224, 0.1);
+      color: #4F8EE0;
+      font-weight: 600;
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, #4F8EE0, #a855f7);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 0.5rem;
+      transition: transform 0.2s ease;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    .device-stats {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .device-stat {
+      background: rgba(168, 85, 247, 0.1);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+      .controls {
+        flex-direction: column;
+      }
+      
+      .device-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-chart-bar"></i> Estadísticas del Concurso QR</h1>
+      <p>Panel de administración para ver participantes del sorteo</p>
+    </div>
+
+    <div class="controls">
+      <button class="btn" onclick="loadStats()">
+        <i class="fas fa-sync"></i> Actualizar Stats
+      </button>
+      <button class="btn" onclick="exportData()">
+        <i class="fas fa-download"></i> Exportar CSV
+      </button>
+      <button class="btn" onclick="clearData()">
+        <i class="fas fa-trash"></i> Limpiar Datos
+      </button>
+      <a href="index.html" class="btn">
+        <i class="fas fa-home"></i> Volver al Inicio
+      </a>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3><i class="fas fa-users"></i> Total Participantes</h3>
+        <div class="stat-number" id="total-participants">0</div>
+        <p>Personas que escanearon el QR</p>
+      </div>
+      
+      <div class="stat-card">
+        <h3><i class="fas fa-globe"></i> IPs Únicas</h3>
+        <div class="stat-number" id="unique-ips">0</div>
+        <p>Participantes únicos (sin duplicados)</p>
+      </div>
+      
+      <div class="stat-card">
+        <h3><i class="fas fa-clock"></i> Último Participante</h3>
+        <div class="stat-number" id="last-participant">N/A</div>
+        <p>Fecha del último escaneo</p>
+      </div>
+      
+      <div class="stat-card">
+        <h3><i class="fas fa-mobile"></i> Dispositivos</h3>
+        <div class="device-stats" id="device-stats">
+          <div class="device-stat">📱 Móvil: <span id="mobile-count">0</span></div>
+          <div class="device-stat">💻 Desktop: <span id="desktop-count">0</span></div>
+          <div class="device-stat">📟 Tablet: <span id="tablet-count">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="participants-table">
+      <h3><i class="fas fa-list"></i> Lista de Participantes</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha/Hora</th>
+            <th>QR Code</th>
+            <th>Dispositivo</th>
+            <th>Idioma</th>
+            <th>IP Hash</th>
+            <th>Session ID</th>
+          </tr>
+        </thead>
+        <tbody id="participants-list">
+          <tr>
+            <td colspan="6" style="text-align: center; color: #888;">
+              No hay participantes aún. Carga los datos haciendo clic en "Actualizar Stats"
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="js/contest-data.js"></script>
+  <script>
+    let contestDataManager;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      contestDataManager = new ContestDataManager();
+      loadStats();
+    });
+
+    function loadStats() {
+      const stats = contestDataManager.getStats();
+      const localData = contestDataManager.getLocalData();
+      
+      // Update stats cards
+      document.getElementById('total-participants').textContent = stats.totalParticipants;
+      document.getElementById('unique-ips').textContent = stats.uniqueIPs;
+      document.getElementById('mobile-count').textContent = stats.devices.mobile;
+      document.getElementById('desktop-count').textContent = stats.devices.desktop;
+      document.getElementById('tablet-count').textContent = stats.devices.tablet;
+      
+      // Format last participant date
+      if (stats.lastParticipant) {
+        const date = new Date(stats.lastParticipant);
+        document.getElementById('last-participant').textContent = date.toLocaleDateString('es-ES');
+      }
+      
+      // Update participants table
+      updateParticipantsTable(localData);
+      
+      console.log('📊 Stats loaded:', stats);
+    }
+
+    function updateParticipantsTable(participants) {
+      const tbody = document.getElementById('participants-list');
+      
+      if (participants.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: #888;">
+              No hay participantes registrados
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      tbody.innerHTML = participants
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+        .map(participant => {
+          const date = new Date(participant.timestamp);
+          const deviceType = getDeviceType(participant.userAgent);
+          
+          return `
+            <tr>
+              <td>${date.toLocaleString('es-ES')}</td>
+              <td>${participant.qrCode}</td>
+              <td>${deviceType}</td>
+              <td>${participant.language}</td>
+              <td>${participant.ipHash}</td>
+              <td>${participant.sessionId}</td>
+            </tr>
+          `;
+        })
+        .join('');
+    }
+
+    function getDeviceType(userAgent) {
+      const ua = userAgent.toLowerCase();
+      if (/mobile|android|iphone/.test(ua)) {
+        return '📱 Móvil';
+      } else if (/tablet|ipad/.test(ua)) {
+        return '📟 Tablet';
+      } else {
+        return '💻 Desktop';
+      }
+    }
+
+    function exportData() {
+      const data = contestDataManager.getLocalData();
+      
+      if (data.length === 0) {
+        alert('No hay datos para exportar');
+        return;
+      }
+      
+      // Create CSV content
+      const headers = ['Timestamp', 'QR Code', 'User Agent', 'Language', 'Screen Size', 'Referrer', 'Session ID', 'IP Hash'];
+      const csvContent = [
+        headers.join(','),
+        ...data.map(row => [
+          row.timestamp,
+          row.qrCode,
+          `"${row.userAgent}"`,
+          row.language,
+          row.screenSize,
+          row.referrer,
+          row.sessionId,
+          row.ipHash
+        ].join(','))
+      ].join('\n');
+      
+      // Download CSV
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `suilatam_participants_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      console.log('📥 Data exported to CSV');
+    }
+
+    function clearData() {
+      if (confirm('¿Estás seguro de que quieres eliminar todos los datos? Esta acción no se puede deshacer.')) {
+        localStorage.removeItem('contest_participants');
+        loadStats();
+        alert('Datos eliminados correctamente');
+      }
+    }
+  </script>
+</body>
+</html> 

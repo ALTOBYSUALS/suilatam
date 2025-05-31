@@ -4,6 +4,7 @@ class QRScanner {
   constructor() {
     this.html5QrCode = null;
     this.isScanning = false;
+    this.contestDataManager = new ContestDataManager();
     this.elements = {
       reader: document.getElementById('qr-reader'),
       startBtn: document.getElementById('start-scanner'),
@@ -89,23 +90,33 @@ class QRScanner {
     }
   }
 
-  onScanSuccess(decodedText, decodedResult) {
+  async onScanSuccess(decodedText, decodedResult) {
     console.log(`Código QR detectado: ${decodedText}`);
     
     // Add success animation
     this.elements.reader.classList.add('qr-success-animation');
     
-    this.updateStatus('success', '¡Código QR detectado! Redirigiendo...');
+    this.updateStatus('success', '¡Código QR detectado! Procesando...');
     
     // Stop the scanner
     this.stopScanner();
     
     // Check if it's our special QR code
     if (this.isValidSuiLatamQR(decodedText)) {
+      // 🎯 CAPTURAR DATOS DEL PARTICIPANTE
+      try {
+        await this.contestDataManager.captureParticipant(decodedText);
+        this.updateStatus('success', '¡Registrado en el sorteo! Redirigiendo...');
+      } catch (error) {
+        console.error('Error capturing participant data:', error);
+        // Continuar aunque falle el registro
+        this.updateStatus('success', '¡Código válido! Redirigiendo...');
+      }
+      
       // Redirect to prize page after a short delay
       setTimeout(() => {
         window.location.href = 'premio-secreto.html';
-      }, 1500);
+      }, 2000);
     } else {
       // Handle other QR codes or show invalid message
       setTimeout(() => {
