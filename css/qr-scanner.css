@@ -314,38 +314,45 @@
 
 /* === REGISTRATION FORM STYLES === */
 .registration-form {
-  background: rgba(30, 41, 59, 0.95);
-  border-radius: 20px;
-  padding: 2rem;
+  background: rgba(20, 25, 35, 0.95);
+  border-radius: 16px;
+  padding: 2.5rem;
   margin-top: 2rem;
-  border: 1px solid rgba(56, 178, 172, 0.3);
+  border: 1px solid rgba(79, 142, 224, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
   animation: slideInUp 0.5s ease-out;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .form-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid rgba(79, 142, 224, 0.2);
+  padding-bottom: 1.5rem;
 }
 
 .form-header h2 {
-  color: #38b2ac;
+  color: #4F8EE0;
   font-size: 1.8rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  font-weight: 700;
 }
 
 .form-header p {
-  color: #94a3b8;
-  font-size: 1.1rem;
+  color: #a0aec0;
+  font-size: 1rem;
 }
 
 .form-grid {
   display: grid;
-  gap: 1.5rem;
+  gap: 1.75rem;
 }
 
 .form-group {
@@ -354,34 +361,36 @@
 }
 
 .form-group label {
-  color: #f1f5f9;
+  color: #e2e8f0;
   font-weight: 600;
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  font-size: 1rem;
 }
 
 .form-group label i {
-  color: #38b2ac;
+  color: #4F8EE0;
   width: 20px;
 }
 
 .form-input {
-  background: rgba(15, 23, 42, 0.8);
-  border: 2px solid rgba(56, 178, 172, 0.3);
-  border-radius: 10px;
-  padding: 1rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid rgba(79, 142, 224, 0.3);
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
   color: #f1f5f9;
   font-size: 1rem;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  height: 50px;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #38b2ac;
-  box-shadow: 0 0 0 3px rgba(56, 178, 172, 0.1);
-  background: rgba(15, 23, 42, 0.95);
+  border-color: #4F8EE0;
+  box-shadow: 0 0 0 3px rgba(79, 142, 224, 0.2);
+  background: rgba(15, 23, 42, 0.8);
 }
 
 .form-input::placeholder {
@@ -391,24 +400,45 @@
 .form-actions {
   display: flex;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 
 .form-actions .btn {
   flex: 1;
-  padding: 1rem 1.5rem;
-  font-size: 1.1rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
   font-weight: 600;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.form-actions .btn-primary {
+  background: linear-gradient(135deg, #4F8EE0, #3b82f6);
+  border: none;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+}
+
+.form-actions .btn-outline {
+  border: 2px solid rgba(79, 142, 224, 0.3);
+  background: transparent;
+  color: #4F8EE0;
 }
 
 /* Success Message Styles */
 .success-message {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  border-radius: 20px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 16px;
   padding: 3rem 2rem;
   text-align: center;
   margin-top: 2rem;
   animation: slideInUp 0.5s ease-out;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3);
 }
 
 .success-content {
@@ -417,19 +447,28 @@
 
 .success-icon {
   font-size: 4rem;
-  margin-bottom: 1rem;
-  animation: bounce 1s ease-out;
+  margin-bottom: 1.5rem;
+  animation: pulse 2s infinite;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
 .success-content h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
+  font-weight: 700;
 }
 
 .success-content p {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   margin-bottom: 2rem;
   opacity: 0.9;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .success-spinner {
@@ -437,11 +476,12 @@
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  font-size: 1.1rem;
-}
-
-.success-spinner i {
-  font-size: 1.5rem;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  max-width: 300px;
+  margin: 0 auto;
 }
 
 /* Animations */

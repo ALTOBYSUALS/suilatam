@@ -306,13 +306,13 @@ class QRScanner {
     successMessage.innerHTML = `
       <div class="success-content">
         <div class="success-icon">
-          <i class="fas fa-trophy"></i>
+          <i class="fas fa-check-circle"></i>
         </div>
-        <h2>¡Registrado Exitosamente!</h2>
-        <p>Ya estás participando en el sorteo de SuiLatam</p>
+        <h2>¡Registro Completado!</h2>
+        <p>Tus datos han sido registrados correctamente en SuiLatam</p>
         <div class="success-spinner">
           <i class="fas fa-spinner fa-spin"></i>
-          <span>Redirigiendo a tu premio...</span>
+          <span>Procesando información...</span>
         </div>
       </div>
     `;
