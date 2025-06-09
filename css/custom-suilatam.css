@@ -1,0 +1,506 @@
+/* Custom CSS for SUI Preloader - Mantiene funcionalidad original de Webflow */
+/* Ajustes para que "SUI●" se vea bien y funcione como preloader */
+
+/* Tamaños del texto SUI LATAM */
+.void-title {
+  font-size: 8rem !important;
+  text-align: center !important;
+  line-height: 0.8 !important;
+}
+
+/* Tablet (max-width: 767px) */
+@media screen and (max-width: 767px) {
+  .void-title {
+    font-size: 5rem !important;
+  }
+  .preloader-logo {
+    max-width: 150px !important;
+    max-height: 90px !important;
+  }
+  .preloader-container {
+    gap: 20px !important;
+  }
+}
+
+/* Mobile (max-width: 479px) */
+@media screen and (max-width: 479px) {
+  .void-title {
+    font-size: 3.5rem !important;
+  }
+  .preloader-logo {
+    max-width: 120px !important;
+    max-height: 70px !important;
+  }
+  .preloader-container {
+    gap: 15px !important;
+  }
+}
+
+/* Responsive para pantallas muy pequeñas */
+@media screen and (max-width: 360px) {
+  .void-title {
+    font-size: 2.8rem !important;
+  }
+  .preloader-logo {
+    max-width: 100px !important;
+    max-height: 60px !important;
+  }
+}
+
+/* Asegurar centrado perfecto del preloader */
+.void-loader {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 9999 !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* Estilo especial para las letras SUI LATAM */
+.span-letter-void {
+  color: #ffffff !important;
+  font-weight: bold !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3) !important;
+}
+
+/* Estilo especial para el punto/círculo como cuarto elemento */
+.span-letter-void:last-child {
+  color: #8b5cf6 !important; /* Color morado/púrpura para destacar */
+  font-weight: bold !important;
+}
+
+/* Custom CSS for SUI LATAM - Logo y colores adaptados */
+/* Ajustes para el preloader con logo y texto */
+
+/* Contenedor del preloader */
+.preloader-container {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 30px !important;
+}
+
+/* Logo del preloader */
+.preloader-logo-wrapper {
+  opacity: 0 !important;
+  animation: fadeInLogo 1.5s ease-in-out 0.5s forwards !important;
+}
+
+.preloader-logo {
+  max-width: 200px !important;
+  width: auto !important;
+  height: auto !important;
+  max-height: 120px !important;
+}
+
+/* Animación para el logo */
+@keyframes fadeInLogo {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Desktop */
+@media screen and (min-width: 768px) {
+  .preloader-logo {
+    max-width: 400px !important;
+    max-height: 250px !important;
+  }
+}
+
+/* Tablet (max-width: 767px) */
+@media screen and (max-width: 767px) {
+  .preloader-logo {
+    max-width: 250px !important;
+    max-height: 150px !important;
+  }
+}
+
+/* Mobile (max-width: 479px) */
+@media screen and (max-width: 479px) {
+  .preloader-logo {
+    max-width: 200px !important;
+    max-height: 120px !important;
+  }
+}
+
+/* Responsive para pantallas muy pequeñas */
+@media screen and (max-width: 360px) {
+  .preloader-logo {
+    max-width: 180px !important;
+    max-height: 100px !important;
+  }
+}
+
+/* COLORES ADAPTADOS AL LOGO SUI LATAM */
+
+/* Botones principales - azul/verde del logo */
+.header_button, .tools_button, .feature_button {
+  background: linear-gradient(135deg, #2563eb, #10b981) !important;
+  border: none !important;
+}
+
+.header_button:hover, .tools_button:hover, .feature_button:hover {
+  background: linear-gradient(135deg, #1d4ed8, #059669) !important;
+  transform: translateY(-2px) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Fondo del header - degradado sutil */
+.section-home-header {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%) !important;
+}
+
+/* Acentos de color para elementos destacados */
+.nav_logo, .footer_logo-wrapper img {
+  filter: drop-shadow(0 2px 4px rgba(37, 99, 235, 0.1)) !important;
+}
+
+/* Colores de texto principales manteniendo legibilidad */
+.heading, h1, h2, h3 {
+  color: #1e293b !important;
+}
+
+/* Enlaces y elementos interactivos con color del logo */
+.nav_link:hover, .footer_nav-link:hover {
+  color: #2563eb !important;
+}
+
+/* Fondos de sección con toques del logo */
+.section-tools {
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+}
+
+/* Video overlay con tinte del logo */
+.video_mask {
+  background: rgba(37, 99, 235, 0.05) !important;
+}
+
+/* Mejoras adicionales de color para SUI LATAM */
+
+/* Navbar Improvements - Slightly increased height and logo fixes */
+.nav_component-copy {
+    background-color: #000000 !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding: 8px 0 !important; /* Increased from 6px to 8px for slightly more height */
+    min-height: 48px !important; /* Increased from 40px to 48px for better proportions */
+}
+
+.nav_container {
+    padding: 0 20px !important;
+    max-height: 48px !important; /* Matching the increased navbar height */
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Logo container - remove white background and make larger */
+.nav_brand-wrapper {
+    padding: 0 !important; /* Remove all padding */
+    background-color: transparent !important; /* Remove white background */
+    border-radius: 0 !important; /* Remove any border radius */
+    box-shadow: none !important; /* Remove any shadow */
+    border: none !important; /* Remove any border */
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+}
+
+.nav_logo {
+    max-height: 40px !important; /* Increased from 32px to 40px for larger logo */
+    width: auto !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+}
+
+.nav_link {
+    color: #ffffff !important;
+    font-weight: 500 !important;
+    padding: 6px 12px !important; /* Reduced padding for smaller navbar */
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+    font-size: 0.85rem !important; /* Slightly smaller text for compact navbar */
+}
+
+.nav_link:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #60a5fa !important;
+    transform: translateY(-1px) !important;
+}
+
+.nav_menu-list-background {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 8px !important; /* Reduced border radius for compact design */
+    padding: 4px 8px !important; /* Reduced padding */
+}
+
+.nav_cta {
+    background: linear-gradient(135deg, #2563eb, #10b981) !important;
+    color: white !important;
+    padding: 6px 16px !important; /* Reduced padding for compact navbar */
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    border: none !important;
+    font-size: 0.85rem !important; /* Smaller text for compact design */
+    height: fit-content !important;
+}
+
+.nav_cta:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3) !important;
+}
+
+.nav_link-mobile {
+    color: #ffffff !important;
+    padding: 10px 16px !important; /* Reduced mobile padding */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.nav_link-mobile:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #60a5fa !important;
+}
+
+.nav_menu-wrapper-mobile-copy {
+    background-color: #000000 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Mobile menu button styling */
+.nav_button {
+    background-color: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 4px !important;
+    padding: 6px !important; /* Reduced padding */
+    height: 28px !important; /* Fixed height for compact navbar */
+}
+
+/* Additional navbar improvements */
+.nav_component-copy .w-nav {
+    position: fixed !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    width: 100% !important;
+}
+
+/* Ensure navbar text is properly visible */
+.nav_menu-list {
+    align-items: center !important;
+    gap: 6px !important; /* Reduced gap for compact design */
+    height: 100% !important;
+}
+
+/* Fix any text color issues */
+.nav_component-copy * {
+    color: #ffffff !important;
+}
+
+.nav_component-copy .nav_link {
+    color: #ffffff !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Hero section padding to account for navbar */
+.section-home-header {
+    padding-top: 58px !important; /* Adjusted for 48px navbar height */
+}
+
+/* Mobile navbar improvements */
+@media (max-width: 768px) {
+    .nav_component-copy {
+        padding: 6px 0 !important; /* Slightly increased for mobile */
+        min-height: 42px !important; /* Increased for mobile */
+    }
+    
+    .nav_logo {
+        max-height: 34px !important; /* Larger logo on mobile */
+    }
+    
+    .section-home-header {
+        padding-top: 52px !important; /* Adjusted for mobile */
+    }
+    
+    .nav_container {
+        max-height: 42px !important;
+    }
+    
+    .nav_button {
+        height: 24px !important;
+        padding: 4px !important;
+    }
+}
+
+/* Iconos y elementos gráficos */
+.feature_icon, .arrow-void {
+  filter: hue-rotate(15deg) saturate(1.2) !important;
+}
+
+/* Logos de partners con filtro sutil */
+.clients_logo {
+  filter: grayscale(0.3) opacity(0.8) !important;
+  transition: all 0.3s ease !important;
+}
+
+.clients_logo:hover {
+  filter: grayscale(0) opacity(1) !important;
+}
+
+/* Cards y contenedores con bordes del logo */
+.feature_component {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.05) !important;
+}
+
+/* Footer con colores sutiles del logo */
+.footer_component {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+  border-top: 1px solid rgba(37, 99, 235, 0.1) !important;
+}
+
+/* Títulos con accent color del logo */
+.feature_title h3, .tools_component h2 {
+  background: linear-gradient(135deg, #2563eb, #10b981) !important;
+  background-clip: text !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+/* SuiLatam Statistics Section */
+.stats-section {
+    background: linear-gradient(135deg, #1e3a8a 0%, #059669 100%);
+    padding: 80px 0;
+    color: white;
+}
+
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 20px;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    background: linear-gradient(45deg, #60a5fa, #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .stats-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+    }
+}
+
+/* Additional navbar improvements */
+.nav_component-copy .w-nav {
+    position: fixed !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    width: 100% !important;
+}
+
+/* Ensure navbar text is properly visible */
+.nav_menu-list {
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+/* Fix any text color issues */
+.nav_component-copy * {
+    color: #ffffff !important;
+}
+
+.nav_component-copy .nav_link {
+    color: #ffffff !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.5px !important;
+}
+
+/* Hero section padding to account for smaller navbar */
+.section-home-header {
+    padding-top: 80px !important; /* Adjusted for smaller navbar */
+}
+
+/* Mobile navbar improvements */
+@media (max-width: 768px) {
+    .nav_component-copy {
+        padding: 10px 0 !important;
+        min-height: 55px !important;
+    }
+    
+    .nav_logo {
+        max-height: 35px !important;
+    }
+    
+    .section-home-header {
+        padding-top: 70px !important;
+    }
+}
+
+/* Force remove any white background from logo and its containers */
+.nav_brand-wrapper,
+.nav_brand-wrapper *,
+.nav_logo,
+.w-inline-block {
+    background-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+}
+
+/* Ensure logo container has no white background */
+a.nav_brand-wrapper.w-inline-block {
+    background-color: transparent !important;
+    background: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+/* Make sure the logo image itself has no background */
+img.nav_logo {
+    background-color: transparent !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+} 
